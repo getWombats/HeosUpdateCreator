@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.33214.272
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HeosUpdateCreator", "HeosUpdateCreator.csproj", "{06288BDF-8EDE-4CE2-AA57-C2C7A3E0E979}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{06288BDF-8EDE-4CE2-AA57-C2C7A3E0E979}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{06288BDF-8EDE-4CE2-AA57-C2C7A3E0E979}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{06288BDF-8EDE-4CE2-AA57-C2C7A3E0E979}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{06288BDF-8EDE-4CE2-AA57-C2C7A3E0E979}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {F5E866B8-5B26-4138-BFBD-D69C38C32FA6}
+	EndGlobalSection
+EndGlobal
