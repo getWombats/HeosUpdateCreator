@@ -6,7 +6,7 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     Title="HeosUpdateCreator"
     Width="888"
-    Height="780"
+    Height="580"
     Icon="app.ico"
     RenderOptions.ClearTypeHint="Auto"
     ResizeMode="NoResize"
@@ -26,7 +26,10 @@
 
     <DockPanel LastChildFill="True">
 
-        <Grid Background="#FFFFFFC1" DockPanel.Dock="Bottom">
+        <Grid
+            Background="#ececec"
+            DockPanel.Dock="Bottom"
+            Visibility="Hidden">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="200" />
                 <ColumnDefinition Width="*" />
@@ -68,7 +71,6 @@
                 FontSize="10"
                 IsReadOnly="True" />
         </Grid>
-
 
         <Grid Background="#FFF3F3F3" DockPanel.Dock="Top">
             <Grid.ColumnDefinitions />
@@ -171,60 +173,43 @@
                 </Label>
             </StackPanel>
 
-            <StackPanel
+            <Border
                 Grid.Row="2"
                 Grid.Column="1"
-                HorizontalAlignment="Left">
-                <Label
-                    x:Name="labelMenu1"
-                    Content="1. Dateien kopieren"
-                    Style="{StaticResource MenuLabelStyle}" />
+                BorderBrush="LightGray"
+                BorderThickness="0,1,0,1">
+                <StackPanel
+                    Grid.Row="2"
+                    Grid.Column="1"
+                    HorizontalAlignment="Left">
+                    <Label
+                        x:Name="labelMenu1"
+                        Content="1. Dateien kopieren"
+                        Style="{StaticResource MenuLabelStyle}" />
 
-                <Label
-                    x:Name="labelMenu2"
-                    Content="2. SQL Setup"
-                    Style="{StaticResource MenuLabelStyle}" />
+                    <Label
+                        x:Name="labelMenu2"
+                        Content="2. SQL Setup"
+                        Style="{StaticResource MenuLabelStyle}" />
 
-                <Label
-                    x:Name="labelMenu3"
-                    Content="3. Setupschritt"
-                    Style="{StaticResource MenuLabelStyle}" />
-                <Label
-                    x:Name="labelMenu4"
-                    Content="4. Setupschritt"
-                    Style="{StaticResource MenuLabelStyle}" />
-                <Label
-                    x:Name="labelMenu5"
-                    Content="5. Setupschritt"
-                    Style="{StaticResource MenuLabelStyle}" />
-                <Label
-                    x:Name="labelMenu6"
-                    Content="6. Setupschritt"
-                    Style="{StaticResource MenuLabelStyle}" />
-            </StackPanel>
-
-            <Rectangle
-                Grid.Row="1"
-                Grid.ColumnSpan="2"
-                Height="1"
-                Margin="10,0,10,0"
-                VerticalAlignment="Bottom"
-                Fill="LightGray" />
-
-            <Rectangle
-                Grid.Row="2"
-                Grid.ColumnSpan="2"
-                Height="1"
-                Margin="10,0,10,0"
-                VerticalAlignment="Bottom"
-                Fill="LightGray" />
-
-            <!--<Rectangle
-                Grid.RowSpan="3"
-                Grid.Column="1"
-                Width="1"
-                HorizontalAlignment="Right"
-                Fill="LightGray" />-->
+                    <Label
+                        x:Name="labelMenu3"
+                        Content="3. Setupschritt"
+                        Style="{StaticResource MenuLabelStyle}" />
+                    <Label
+                        x:Name="labelMenu4"
+                        Content="4. Setupschritt"
+                        Style="{StaticResource MenuLabelStyle}" />
+                    <Label
+                        x:Name="labelMenu5"
+                        Content="5. Setupschritt"
+                        Style="{StaticResource MenuLabelStyle}" />
+                    <Label
+                        x:Name="labelMenu6"
+                        Content="6. Setupschritt"
+                        Style="{StaticResource MenuLabelStyle}" />
+                </StackPanel>
+            </Border>
         </Grid>
 
         <Grid>

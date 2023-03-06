@@ -4,99 +4,73 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     Title="DateienKopieren"
     Width="700"
-    Height="700"
+    Height="500"
     Background="Transparent"
     KeepAlive="True">
 
-
     <DockPanel LastChildFill="True">
 
-        <!--  Grid bottom  -->
+        <!--  Grid unten  -->
         <Grid
-            Margin="0,0,20,0"
-            HorizontalAlignment="Right"
+            HorizontalAlignment="Left"
             Background="Transparent"
             DockPanel.Dock="Bottom">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="300" />
+                <ColumnDefinition Width="100" />
+                <ColumnDefinition Width="300" />
             </Grid.ColumnDefinitions>
             <Grid.RowDefinitions>
                 <RowDefinition Height="50" />
             </Grid.RowDefinitions>
 
-            <Rectangle
-                Width="25"
-                Height="300"
-                Margin="0,-150,0,0"
+
+
+            <Button
+                x:Name="buttonKopieren"
+                Grid.Column="0"
+                Margin="25,0,0,0"
                 HorizontalAlignment="Left"
-                Fill="Red"
-                Visibility="Hidden" />
+                Click="buttonKopieren_Click"
+                ClickMode="Press"
+                Style="{StaticResource buttonStyleBlue}"
+                Visibility="Visible">
+                <Button.Content>Kopieren</Button.Content>
+            </Button>
 
-            <StackPanel
-                Margin="0,0,0,15"
+            <Button
+                x:Name="buttonAbbrechen"
+                Grid.Column="0"
+                Margin="25,0,0,0"
+                HorizontalAlignment="Left"
+                Click="buttonAbbrechen_Click"
+                ClickMode="Press"
+                Style="{StaticResource buttonStyleRed}"
+                Visibility="Hidden">
+                <Button.Content>Abbrechen</Button.Content>
+            </Button>
+
+            <Button
+                x:Name="buttonZurück"
+                Grid.Column="2"
+                Margin="0,0,150,0"
                 HorizontalAlignment="Right"
-                Orientation="Horizontal">
+                Style="{StaticResource buttonStyleBlue}"
+                Visibility="Hidden">
+                <Button.Content>Zurück</Button.Content>
+            </Button>
 
-                <Border
-                    Grid.Row="0"
-                    Grid.Column="3"
-                    Margin="0,0,38,0"
-                    VerticalAlignment="Bottom"
-                    Style="{StaticResource buttonOuterBorderStyle}">
-                    <Border Style="{StaticResource buttonInnerBorderStyle}">
-                        <Button
-                            x:Name="buttonKopieren"
-                            Background="Transparent"
-                            BorderBrush="Transparent"
-                            Click="buttonKopieren_Click"
-                            ClickMode="Press"
-                            Style="{StaticResource buttonStyleRounded}">
-                            <Button.Content>Kopieren</Button.Content>
-                        </Button>
-                    </Border>
-                </Border>
+            <Button
+                x:Name="buttonWeiter"
+                Grid.Column="3"
+                Margin="0,0,25,0"
+                HorizontalAlignment="Right"
+                Click="buttonWeiter_Click"
+                ClickMode="Press"
+                Style="{StaticResource buttonStyleBlue}">
+                <Button.Content>Weiter</Button.Content>
+            </Button>
 
-                <Border
-                    x:Name="borderButtonAbbrechen"
-                    Grid.Row="0"
-                    Grid.Column="2"
-                    Margin="0,0,235,0"
-                    VerticalAlignment="Bottom"
-                    Style="{StaticResource buttonOuterBorderStyle}"
-                    Visibility="Hidden">
-                    <Border Style="{StaticResource buttonInnerBorderStyle}">
-                        <Button
-                            x:Name="buttonAbbrechen"
-                            Background="Transparent"
-                            BorderBrush="Transparent"
-                            Click="buttonAbbrechen_Click"
-                            ClickMode="Press"
-                            Style="{StaticResource buttonStyleRounded}">
-                            <Button.Content>Abbrechen</Button.Content>
-                        </Button>
-                    </Border>
-                </Border>
-
-                <Border
-                    Grid.Row="0"
-                    Grid.Column="3"
-                    Margin="0"
-                    VerticalAlignment="Bottom"
-                    Style="{StaticResource buttonOuterBorderStyle}">
-                    <Border Style="{StaticResource buttonInnerBorderStyle}">
-
-                        <Button
-                            x:Name="buttonWeiter"
-                            Background="Transparent"
-                            BorderBrush="Transparent"
-                            Click="buttonWeiter_Click"
-                            ClickMode="Press"
-                            Style="{StaticResource buttonStyleRounded}">
-                            <Button.Content>Weiter</Button.Content>
-                        </Button>
-                    </Border>
-                </Border>
-            </StackPanel>
         </Grid>
 
         <!--  Grid top  -->
@@ -109,33 +83,21 @@
                 <RowDefinition Height="40" />
                 <RowDefinition Height="30" />
                 <RowDefinition Height="200" />
-                <RowDefinition Height="40" />
+                <RowDefinition Height="10" />
                 <RowDefinition Height="30" />
-                <RowDefinition Height="200" />
                 <RowDefinition Height="*" />
             </Grid.RowDefinitions>
-            <Rectangle
-                Grid.RowSpan="7"
-                Grid.Column="0"
-                Width="2"
-                HorizontalAlignment="Left"
-                Fill="#FFF3F3F3" />
-            <Rectangle
-                Grid.Row="6"
+
+            <Border
+                Grid.RowSpan="6"
                 Grid.ColumnSpan="2"
-                Height="2"
-                VerticalAlignment="Bottom"
-                Fill="#FFF3F3F3" />
-            <Rectangle
-                Grid.RowSpan="7"
-                Grid.Column="1"
-                Width="2"
-                HorizontalAlignment="Right"
-                Fill="#FFF3F3F3" />
+                BorderBrush="#FFF3F3F3"
+                BorderThickness="2,0,2,2" />
 
             <!--  Grid Row 0  -->
             <Label
                 Grid.Row="0"
+                Grid.ColumnSpan="2"
                 Margin="25,10,0,10"
                 HorizontalAlignment="Left"
                 Content="Bereitstellen der kompilierten Dateien"
@@ -160,22 +122,33 @@
 
             <!--  Grid Row 2  -->
             <DataGrid
-                x:Name="dataGridSource"
+                x:Name="dataGridSourcePath"
                 Grid.Row="2"
                 Grid.ColumnSpan="2"
                 Margin="25,0,200,0"
+                HorizontalAlignment="Left"
+                VerticalAlignment="Top"
                 AutoGenerateColumns="False"
                 Background="White"
                 BorderBrush="#FFBDBDBD"
-                ItemsSource="{Binding}">
+                CanUserReorderColumns="False"
+                CanUserResizeColumns="False"
+                CanUserResizeRows="False"
+                CanUserSortColumns="False"
+                FontFamily="Arial"
+                GridLinesVisibility="None"
+                HeadersVisibility="Column"
+                HorizontalGridLinesBrush="{x:Null}"
+                IsReadOnly="True"
+                VerticalGridLinesBrush="#FFB8B8B8">
                 <DataGrid.Columns>
                     <DataGridTextColumn
-                        Width="170"
+                        Width="220"
                         Header="Name"
                         IsReadOnly="True" />
                     <DataGridTextColumn
-                        Binding="{Binding}"
-                        Header="Änderungsdatum"
+                        Width="150"
+                        Header="Datum"
                         IsReadOnly="True" />
                 </DataGrid.Columns>
             </DataGrid>
@@ -200,34 +173,14 @@
                 Style="{StaticResource labelNormalTextStyle}" />
 
             <!--  Grid Row 5  -->
-            <DataGrid
-                x:Name="dataGridTarget"
-                Grid.Row="5"
-                Grid.ColumnSpan="2"
-                Margin="25,0,200,0"
-                AutoGenerateColumns="False"
-                Background="White"
-                BorderBrush="#FFBDBDBD">
-                <DataGrid.Columns>
-                    <DataGridTextColumn
-                        Width="170"
-                        Binding="{Binding}"
-                        Header="Name"
-                        IsReadOnly="True" />
-                    <DataGridTextColumn
-                        Binding="{Binding}"
-                        Header="Änderungsdatum"
-                        IsReadOnly="True" />
-                </DataGrid.Columns>
-            </DataGrid>
-
 
             <!--  Grid Row 6  -->
             <Label
                 x:Name="labelCopyInProgress"
                 Grid.Row="6"
-                Margin="25,35,100,0"
-                VerticalAlignment="Top"
+                Margin="25,0,0,60"
+                HorizontalAlignment="Left"
+                VerticalAlignment="Bottom"
                 HorizontalContentAlignment="Left"
                 Content="Daten werden kopiert..."
                 Style="{StaticResource labelNormalTextStyle}"
@@ -236,8 +189,8 @@
             <Label
                 x:Name="labelCopyProgressPercent"
                 Grid.Row="6"
-                Margin="146,35,170,0"
-                VerticalAlignment="Top"
+                Margin="150,0,160,60"
+                VerticalAlignment="Bottom"
                 HorizontalContentAlignment="Right"
                 Content="0%"
                 Style="{StaticResource labelNormalTextStyle}"
@@ -246,10 +199,10 @@
             <Label
                 x:Name="labelCopyFileInfo"
                 Grid.Row="6"
-                Margin="25,75,100,0"
-                VerticalAlignment="Top"
+                Margin="25,0,0,15"
+                VerticalAlignment="Bottom"
                 HorizontalContentAlignment="Left"
-                Content=""
+                Content="informations"
                 Style="{StaticResource labelNormalTextStyle}"
                 Visibility="Hidden" />
 
@@ -258,8 +211,8 @@
                 Grid.Row="6"
                 Width="300"
                 Height="15"
-                Margin="0,55,0,0"
-                VerticalAlignment="Top"
+                Margin="0,0,0,35"
+                VerticalAlignment="Bottom"
                 Background="White"
                 BorderBrush="#FFEEEEEE"
                 BorderThickness="1"

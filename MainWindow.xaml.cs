@@ -9,7 +9,7 @@ namespace HeosUpdateCreator
     /// </summary>
     public partial class MainWindow : Window
     {
-        public int i_versionsnummer = 396;
+        //public int i_versionsnummer = 396;
 
         public MainWindow()
         {
@@ -22,7 +22,6 @@ namespace HeosUpdateCreator
 
             frameMainContent.Source = new Uri("DateienKopieren.xaml", UriKind.Relative); // Frame mit "DateienKopieren" page initialisieren
 
-            //NavigationService ns = NavigationService.GetNavigationService(this);
         }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
 using System.Windows;
@@ -13,28 +14,100 @@ namespace HeosUpdateCreator
     /// </summary>
     public partial class DateienKopieren : Page
     {
-        private static string s_sourcePath = @"O:\rENT\ENT Soria\Temp\Quellverzeichnis";
-        private static string s_targetPath = @"C:\Zielverzeichnis";
 
-        private readonly DirectoryInfo diSource = new DirectoryInfo(s_sourcePath);
-        private readonly DirectoryInfo diTarget = new DirectoryInfo(s_targetPath);
+        private static string s_sourcePath = @"O:\ENT\ENT Soria\Temp\Quellverzeichnis";
+        private static string s_targetPath = @"C:\Zielverzeichnis";
 
         // Backgroundworker initialisieren
         private BackgroundWorker worker = null;
 
-        // ---------- [MAIN ANFANG] ----------
-        public DateienKopieren()
+        #region Main
+
+        public DateienKopieren() // Main
         {
             InitializeComponent();
 
-            worker = new BackgroundWorker();
-            //worker.DoWork += new DoWorkEventHandler(lalala);
-            worker.WorkerSupportsCancellation = true;
-            worker.WorkerReportsProgress = true;
-            worker.DoWork += worker_DoWork;
-            worker.ProgressChanged += worker_ProgressChanged;
-            worker.RunWorkerCompleted += worker_RunWorkerCompleted;
+            Load_Verzeichnisinfo();
 
+            Check_Path_exists();
+        }
+
+        #endregion Main
+
+        #region Buttons
+
+        private void buttonWeiter_Click(object sender, RoutedEventArgs e)
+        {
+            NavigationService ns = NavigationService.GetNavigationService(this);
+            ns.Navigate(new Uri("sqlSetup.xaml", UriKind.Relative));
+        }
+
+        private void buttonKopieren_Click(object sender, RoutedEventArgs e)
+        {
+            if (Directory.Exists(s_sourcePath) && Directory.Exists(s_targetPath))
+            {
+                Worker_Initialisieren();
+
+                Verzeichnisinhalt_Loeschen();
+                if (worker.IsBusy != true)
+                {
+                    Labelstyle_Kopiervorgang_start();
+
+                    worker.RunWorkerAsync(1000);
+                }
+                else
+                {
+                    //sdsdf
+                }
+            }
+        }
+
+        private void buttonAbbrechen_Click(object sender, RoutedEventArgs e)
+        {
+            worker.CancelAsync();
+        }
+
+        #endregion Buttons
+
+        #region Styles
+
+        private void Labelstyle_Kopiervorgang_start()
+        {
+            labelCopyInProgress.Content = "Dateien werden kopiert...";
+            labelCopyInProgress.FontWeight = FontWeights.Regular;
+            labelCopyInProgress.Foreground = Brushes.Black;
+            labelCopyInProgress.Visibility = Visibility.Visible;
+            labelCopyProgressPercent.Visibility = Visibility.Visible;
+            labelCopyFileInfo.Visibility = Visibility.Visible;
+            buttonAbbrechen.Visibility = Visibility.Visible;
+            copyProgressBar.Visibility = Visibility.Visible;
+            copyProgressBar.Value = 0;
+            buttonKopieren.Visibility = Visibility.Hidden;
+        }
+
+        private void Labelstyle_Kopiervorgang_abgebrochen()
+        {
+            labelCopyInProgress.Content = "Kopiervrogang abgebrochen";
+            labelCopyInProgress.FontWeight = FontWeights.Bold;
+            labelCopyInProgress.Foreground = Brushes.Red;
+            labelCopyProgressPercent.Visibility = Visibility.Hidden;
+            labelCopyFileInfo.Visibility = Visibility.Hidden;
+            buttonAbbrechen.Visibility = Visibility.Hidden;
+            buttonKopieren.Visibility = Visibility.Visible;
+            copyProgressBar.Value = 0;
+        }
+
+        private void Labelstyle_Kopiervorgang_erfolgreich()
+        {
+            labelCopyInProgress.Content = "Daten erfolgreich kopiert";
+            labelCopyProgressPercent.Visibility = Visibility.Hidden;
+            labelCopyFileInfo.Visibility = Visibility.Hidden;
+            buttonAbbrechen.Visibility = Visibility.Hidden;
+            copyProgressBar.Value = 100;
+        }
+
+        private void Check_Path_exists()
+        {
             if (!Directory.Exists(s_sourcePath))
             {
                 labelOriginPath.Content = "Verzeichnis konnte nicht gefunden werden!";
@@ -51,113 +124,108 @@ namespace HeosUpdateCreator
             }
         }
 
-        // ---------- [MAIN ENDE] ----------
+        #endregion Styles
 
+        #region Worker
 
-        // ---------- [BUTTONS ANFANG] ----------
-        private void buttonWeiter_Click(object sender, RoutedEventArgs e)
+        private void Worker_Initialisieren()
         {
-            NavigationService ns = NavigationService.GetNavigationService(this);
-            ns.Navigate(new Uri("sqlSetup.xaml", UriKind.Relative));
+            worker = new BackgroundWorker();
+            worker.WorkerSupportsCancellation = true;
+            worker.WorkerReportsProgress = true;
+
+            worker.DoWork += worker_DoWork;
+            worker.ProgressChanged += worker_copyProgressBarUpdate;
+            worker.RunWorkerCompleted += worker_copyCompleted;
         }
 
-        private void buttonKopieren_Click(object sender, RoutedEventArgs e)
+        public void worker_DoWork(object sender, DoWorkEventArgs eDoWork)
         {
-            //VerzeichnisLoeschen();
-            if (worker.IsBusy != true)
-            {
-                labelCopyInProgress.Visibility = Visibility.Visible;
-                labelCopyProgressPercent.Visibility = Visibility.Visible;
-                labelCopyFileInfo.Visibility = Visibility.Visible;
-                borderButtonAbbrechen.Visibility = Visibility.Visible;
+            string[] fileList = Directory.GetFiles(s_sourcePath);
+            string[] dirList = Directory.GetDirectories(s_sourcePath);
 
-                copyProgressBar.Value = 0;
-                copyProgressBar.Visibility = Visibility.Visible;
+            int count = 0;
 
-                buttonKopieren.IsEnabled = false;
-
-                worker.RunWorkerAsync(10000);
-            }
-            else
-            {
-                // nicht verwendet
-            }
-        }
-
-        private void buttonAbbrechen_Click(object sender, RoutedEventArgs e)
-        {
-            worker.CancelAsync();
-        }
-
-        // ---------- [BUTTONS ENDE] ----------
-
-        // ---------- [BACKGROUNDWORKER ANFANG] ----------
-        private void worker_DoWork(object sender, DoWorkEventArgs eDoWork)
-        {
-            int max = (int)eDoWork.Argument;
-            int result = 0;
-            for (int i = 0; i < max; i++)
+            foreach (string dirPath in Directory.GetDirectories(s_sourcePath, "*", SearchOption.AllDirectories))
             {
                 if (worker.CancellationPending == true)
                 {
                     eDoWork.Cancel = true;
                     return;
                 }
-                int progressPercentage = Convert.ToInt32(((double)i / max) * 100);
-                if (i % 42 == 0)
-                {
-                    result++;
-                    (sender as BackgroundWorker).ReportProgress(progressPercentage, i);
-                }
-                else
-                {
-                    (sender as BackgroundWorker).ReportProgress(progressPercentage);
-                }
-
-                System.Threading.Thread.Sleep(1);
+                Directory.CreateDirectory(dirPath.Replace(s_sourcePath, s_targetPath));
+                count++;
+                (sender as BackgroundWorker).ReportProgress(count);
             }
-            eDoWork.Result = result;
+
+            foreach (string newPath in Directory.GetFiles(s_sourcePath, "*.*", SearchOption.AllDirectories))
+            {
+                if (worker.CancellationPending == true)
+                {
+                    eDoWork.Cancel = true;
+                    return;
+                }
+                File.Copy(newPath, newPath.Replace(s_sourcePath, s_targetPath), true);
+                count++;
+                (sender as BackgroundWorker).ReportProgress(count);
+            }
+            eDoWork.Result = count;
         }
 
-        private void worker_ProgressChanged(object sender, ProgressChangedEventArgs uiUpdate)
+
+        //private void worker_DoWork(object sender, DoWorkEventArgs eDoWork)
+        //{
+        //    int max = (int)eDoWork.Argument;
+        //    int result = 0;
+        //    for (int i = 0; i < max; i++)
+        //    {
+        //        if (worker.CancellationPending == true)
+        //        {
+        //            eDoWork.Cancel = true;
+        //            return;
+        //        }
+        //        int progressPercentage = Convert.ToInt32(((double)i / max) * 100);
+        //        if (i % 42 == 0)
+        //        {
+        //            result++;
+        //            (sender as BackgroundWorker).ReportProgress(progressPercentage, i);
+        //        }
+        //        else
+        //        {
+        //            (sender as BackgroundWorker).ReportProgress(progressPercentage);
+        //        }
+
+        //        System.Threading.Thread.Sleep(1);
+        //    }
+        //    eDoWork.Result = result;
+        //}
+
+        private void worker_copyProgressBarUpdate(object sender, ProgressChangedEventArgs uiUpdate)
         {
             copyProgressBar.Value = uiUpdate.ProgressPercentage;
             labelCopyFileInfo.Content = uiUpdate.UserState;
             labelCopyProgressPercent.Content = uiUpdate.ProgressPercentage.ToString() + "%";
-            //if (uiUpdate.UserState != null)
-            //    lbResults.Items.Add(uiUpdate.UserState);
         }
 
-        private void worker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
+        private void worker_copyCompleted(object sender, RunWorkerCompletedEventArgs eComplete)
         {
-            if (e.Cancelled)
+            if (eComplete.Cancelled)
             {
-                labelCopyInProgress.Content = "Kopiervrogang abgebrochen";
-                labelCopyInProgress.FontWeight = FontWeights.Bold;
-                labelCopyInProgress.Foreground = Brushes.Red;
-
-                labelCopyProgressPercent.Visibility = Visibility.Hidden;
-                labelCopyFileInfo.Visibility = Visibility.Hidden;
-
-                borderButtonAbbrechen.Visibility = Visibility.Hidden;
-                buttonKopieren.Visibility = Visibility.Visible;
+                Labelstyle_Kopiervorgang_abgebrochen();
             }
             else
             {
-                //var window = Application.Current.MainWindow;
-                //(window as MainWindow).menuLabelChecked_1.Visibility = Visibility.Visible;
-                labelCopyInProgress.Content = "Daten erfolgreich kopiert";
-                labelCopyProgressPercent.Visibility = Visibility.Hidden;
-                labelCopyFileInfo.Visibility = Visibility.Hidden;
-                borderButtonAbbrechen.Visibility = Visibility.Hidden;
-                copyProgressBar.Value = 100;
+                Labelstyle_Kopiervorgang_erfolgreich();
+                var window = Application.Current.MainWindow;
+                (window as MainWindow).menuLabelChecked_1.Visibility = Visibility.Visible;
             }
         }
 
-        // ---------- [BACKGROUNDWORKER ENDE] ----------
+        #endregion Worker
 
-        // ---------- [METHODEN ANFANG] ----------
-        public void VerzeichnisLoeschen()
+        #region Verzeichnisinhalt löschen
+
+        public void Verzeichnisinhalt_Loeschen()
         {
             MessageBoxResult msgRes = MessageBox.Show("Alle Dateien im Verzeichnis [ " + s_targetPath + " ] werden gelöscht!", "Achtung", MessageBoxButton.OKCancel, MessageBoxImage.Warning);
 
@@ -183,35 +251,39 @@ namespace HeosUpdateCreator
             }
             else
             {
-                // nicht verwendet
+                //dsds
             }
         }
 
-        public static void StartKopieren(string sourceDirectory, string targetDirectory)
+        #endregion Verzeichnisinhalt löschen
+
+        #region Verzeichnisinhalt in dataGrid darstellen
+
+        private void Load_Verzeichnisinfo()
         {
-            //CopyAll(diSource, diTarget);
+            if (Directory.Exists(s_sourcePath))
+            {
+
+                string[] sld = Directory.GetFiles(s_sourcePath, "*.exe");
+                //DirectoryInfo dirInfo = new DirectoryInfo(s_sourcePath);
+
+                //List<string> sld = new List<string>();
+
+                //foreach (FileInfo fi in dirInfo.EnumerateFiles())
+                //{
+                //    sld.Add(fi.ToString());
+                //    //dataGridSourcePath.Items.Add(fi);
+                //}
+                //dataGridSourcePath.ItemsSource = sld;
+
+                //foreach (DirectoryInfo dir in dirInfo.GetDirectories())
+                //{
+                //    sld.Add(dir.ToString());
+                //}
+                dataGridSourcePath.ItemsSource = sld;
+            }
         }
 
-        public static void CopyAll(DirectoryInfo source, DirectoryInfo target)
-        {
-            //Directory.CreateDirectory(target.FullName);
-
-            // Copy each file into the new directory.
-            foreach (FileInfo fi in source.GetFiles())
-            {
-                //Console.WriteLine(@"Copying {0}\{1}", target.FullName, fi.Name);
-                fi.CopyTo(Path.Combine(target.FullName, fi.Name), true);
-            }
-
-            // Copy each subdirectory using recursion.
-            foreach (DirectoryInfo diSourceSubDir in source.GetDirectories())
-            {
-                DirectoryInfo nextTargetSubDir =
-                    target.CreateSubdirectory(diSourceSubDir.Name);
-                CopyAll(diSourceSubDir, nextTargetSubDir);
-            }
-        }
-
-        // ---------- [METHODEN ENDE] ----------
+        #endregion Ordnerinhalt darstellen
     }
 }

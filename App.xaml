@@ -50,13 +50,145 @@
         </Style>
 
         <!--  Button style  -->
-        <Style x:Key="buttonStyleSquare" TargetType="{x:Type Button}">
-            <Setter Property="Label.FontFamily" Value="Arial" />
-            <Setter Property="Width" Value="125" />
-            <Setter Property="Height" Value="25" />
-            <Setter Property="HorizontalAlignment" Value="Right" />
-            <Setter Property="Background" Value="#FFE2E2E2" />
+        <Style x:Key="buttonStyleBlue" TargetType="{x:Type Button}">
+            <Setter Property="Padding" Value="0" />
+            <Setter Property="Width" Value="100" />
+            <Setter Property="Height" Value="28" />
+            <Setter Property="Foreground" Value="#FF00C5FF" />
+            <Setter Property="FontFamily" Value="calibri" />
+            <Setter Property="FontSize" Value="12" />
+            <Setter Property="FontStyle" Value="Normal" />
+            <Setter Property="FontWeight" Value="DemiBold" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border
+                            Background="White"
+                            BorderBrush="#FF00C5FF"
+                            BorderThickness="1.5"
+                            CornerRadius="1">
+                            <ContentPresenter
+                                Margin="{TemplateBinding Padding}"
+                                HorizontalAlignment="Center"
+                                VerticalAlignment="Center" />
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Foreground" Value="White" />
+                    <Setter Property="Template">
+                        <Setter.Value>
+                            <ControlTemplate TargetType="Button">
+                                <Border
+                                    Background="#FF00C5FF"
+                                    BorderBrush="#FF00C5FF"
+                                    BorderThickness="1"
+                                    CornerRadius="1">
+                                    <ContentPresenter
+                                        Margin="{TemplateBinding Padding}"
+                                        HorizontalAlignment="Center"
+                                        VerticalAlignment="Center" />
+                                </Border>
+                            </ControlTemplate>
+                        </Setter.Value>
+                    </Setter>
+                </Trigger>
+                <Trigger Property="Button.IsPressed" Value="True">
+                    <Setter Property="Foreground" Value="White" />
+                    <Setter Property="Template">
+                        <Setter.Value>
+                            <ControlTemplate TargetType="Button">
+                                <Border
+                                    Background="#FF007eff"
+                                    BorderBrush="#FF00C5FF"
+                                    BorderThickness="1"
+                                    CornerRadius="1">
+                                    <ContentPresenter
+                                        Margin="{TemplateBinding Padding}"
+                                        HorizontalAlignment="Center"
+                                        VerticalAlignment="Center" />
+                                </Border>
+                            </ControlTemplate>
+                        </Setter.Value>
+                    </Setter>
+                </Trigger>
+            </Style.Triggers>
+
         </Style>
+        <!--  .........................................  -->
+
+
+        <!--  Button style Abbrechen  -->
+        <Style x:Key="buttonStyleRed" TargetType="{x:Type Button}">
+            <Setter Property="Padding" Value="0" />
+            <Setter Property="Width" Value="100" />
+            <Setter Property="Height" Value="28" />
+            <Setter Property="Foreground" Value="#ff0000" />
+            <Setter Property="FontFamily" Value="calibri" />
+            <Setter Property="FontSize" Value="12" />
+            <Setter Property="FontStyle" Value="Normal" />
+            <Setter Property="FontWeight" Value="DemiBold" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border
+                            Background="White"
+                            BorderBrush="#ff0000"
+                            BorderThickness="1"
+                            CornerRadius="1">
+                            <ContentPresenter
+                                Margin="{TemplateBinding Padding}"
+                                HorizontalAlignment="Center"
+                                VerticalAlignment="Center" />
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Foreground" Value="White" />
+                    <Setter Property="Template">
+                        <Setter.Value>
+                            <ControlTemplate TargetType="Button">
+                                <Border
+                                    Background="#ff4545"
+                                    BorderBrush="#ff0000"
+                                    BorderThickness="1"
+                                    CornerRadius="1">
+                                    <ContentPresenter
+                                        Margin="{TemplateBinding Padding}"
+                                        HorizontalAlignment="Center"
+                                        VerticalAlignment="Center" />
+                                </Border>
+                            </ControlTemplate>
+                        </Setter.Value>
+                    </Setter>
+                </Trigger>
+                <Trigger Property="Button.IsPressed" Value="True">
+                    <Setter Property="Foreground" Value="White" />
+                    <Setter Property="Template">
+                        <Setter.Value>
+                            <ControlTemplate TargetType="Button">
+                                <Border
+                                    Background="#ff0000"
+                                    BorderBrush="#ff4545"
+                                    BorderThickness="1"
+                                    CornerRadius="1">
+                                    <ContentPresenter
+                                        Margin="{TemplateBinding Padding}"
+                                        HorizontalAlignment="Center"
+                                        VerticalAlignment="Center" />
+                                </Border>
+                            </ControlTemplate>
+                        </Setter.Value>
+                    </Setter>
+                </Trigger>
+            </Style.Triggers>
+
+        </Style>
+        <!--  .........................................  -->
 
         <!--  Button style for rounded border  -->
         <Style x:Key="buttonStyleRounded" TargetType="{x:Type Button}">
