@@ -9,7 +9,7 @@
     Height="580"
     Icon="app.ico"
     RenderOptions.ClearTypeHint="Auto"
-    ResizeMode="NoResize"
+    ResizeMode="CanResizeWithGrip"
     TextOptions.TextFormattingMode="Display"
     TextOptions.TextRenderingMode="Auto"
     WindowStartupLocation="CenterScreen"
@@ -72,7 +72,7 @@
                 IsReadOnly="True" />
         </Grid>
 
-        <Grid Background="#FFF3F3F3" DockPanel.Dock="Top">
+        <Grid Background="White" DockPanel.Dock="Top">
             <Grid.ColumnDefinitions />
             <Grid.RowDefinitions>
                 <RowDefinition Height="20" />

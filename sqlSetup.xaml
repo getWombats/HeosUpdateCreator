@@ -4,71 +4,50 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     Title="SQL"
     Width="700"
-    Height="700"
-    Background="Transparent"
+    Height="500"
+    Background="White"
     KeepAlive="True">
 
     <DockPanel LastChildFill="True">
 
-        <!--  Grid bottom  -->
+        <!--  Grid unten  -->
         <Grid
-            Margin="0,0,20,0"
-            HorizontalAlignment="Right"
+            HorizontalAlignment="Left"
             Background="Transparent"
             DockPanel.Dock="Bottom">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="300" />
+                <ColumnDefinition Width="100" />
+                <ColumnDefinition Width="300" />
             </Grid.ColumnDefinitions>
             <Grid.RowDefinitions>
                 <RowDefinition Height="50" />
             </Grid.RowDefinitions>
 
-            <StackPanel
-                Margin="0,0,0,15"
+
+            <Button
+                x:Name="buttonZurueck"
+                Grid.Column="2"
+                Margin="0,0,150,0"
                 HorizontalAlignment="Right"
-                Orientation="Horizontal">
+                Click="buttonZurueck_Click"
+                ClickMode="Release"
+                Style="{StaticResource buttonStyleBlue}"
+                Visibility="Visible">
+                <Button.Content>Zurück</Button.Content>
+            </Button>
 
-                <Border
-                    Grid.Row="0"
-                    Grid.Column="2"
-                    Margin="0,0,20,0"
-                    VerticalAlignment="Bottom"
-                    Style="{StaticResource buttonOuterBorderStyle}">
-                    <Border Style="{StaticResource buttonInnerBorderStyle}">
-                        <Button
-                            x:Name="buttonZurueck"
-                            Background="Transparent"
-                            BorderBrush="Transparent"
-                            Click="buttonZurueck_Click"
-                            ClickMode="Press"
-                            Style="{StaticResource buttonStyleRounded}">
-                            <Label
-                                Width="Auto"
-                                Height="Auto"
-                                Content="Zurück" />
-                        </Button>
-                    </Border>
-                </Border>
+            <Button
+                x:Name="buttonWeiter"
+                Grid.Column="3"
+                Margin="0,0,25,0"
+                HorizontalAlignment="Right"
+                Click="buttonWeiter_Click"
+                ClickMode="Release"
+                Style="{StaticResource buttonStyleBlue}">
+                <Button.Content>Weiter</Button.Content>
+            </Button>
 
-                <Border
-                    Grid.Row="0"
-                    Grid.Column="3"
-                    Margin="0"
-                    VerticalAlignment="Bottom"
-                    Style="{StaticResource buttonOuterBorderStyle}">
-                    <Border Style="{StaticResource buttonInnerBorderStyle}">
-                        <Button
-                            x:Name="buttonWeiter"
-                            Background="Transparent"
-                            BorderBrush="Transparent"
-                            Click="buttonWeiter_Click"
-                            ClickMode="Press"
-                            Style="{StaticResource buttonStyleRounded}">
-                            <Button.Content>Weiter</Button.Content>
-                        </Button>
-                    </Border>
-                </Border>
-            </StackPanel>
         </Grid>
 
         <!--  Grid top  -->
@@ -81,33 +60,21 @@
                 <RowDefinition Height="40" />
                 <RowDefinition Height="30" />
                 <RowDefinition Height="200" />
-                <RowDefinition Height="40" />
-                <RowDefinition Height="30" />
-                <RowDefinition Height="200" />
                 <RowDefinition Height="*" />
+                <RowDefinition Height="30" />
+                <RowDefinition Height="130" />
             </Grid.RowDefinitions>
-            <Rectangle
-                Grid.RowSpan="7"
-                Grid.Column="0"
-                Width="2"
-                HorizontalAlignment="Left"
-                Fill="LightGray" />
-            <Rectangle
-                Grid.Row="6"
+
+            <Border
+                Grid.RowSpan="6"
                 Grid.ColumnSpan="2"
-                Height="2"
-                VerticalAlignment="Bottom"
-                Fill="LightGray" />
-            <Rectangle
-                Grid.RowSpan="7"
-                Grid.Column="1"
-                Width="2"
-                HorizontalAlignment="Right"
-                Fill="LightGray" />
+                BorderBrush="#FFF3F3F3"
+                BorderThickness="2,0,2,2" />
 
             <!--  Grid Row 0  -->
             <Label
                 Grid.Row="0"
+                Grid.ColumnSpan="2"
                 Margin="25,10,0,10"
                 HorizontalAlignment="Left"
                 Content="SQL Setup"
@@ -122,11 +89,16 @@
                 <Run Text="SQL-Setupdatei und Datenbank erstellen:"/>
                 <LineBreak/>
                 <LineBreak/>
+                <LineBreak/>
+                <LineBreak/>
                 <Run Text="● Aktuell DB HeosUpdate auf SQL 2005 Instanz importieren"/>
+                <LineBreak/>
                 <LineBreak/>
                 <Run Text="● SQL-Setup auf DB HeosUpdate auf SQL 2005 ausführen"/>
                 <LineBreak/>
+                <LineBreak/>
                 <Run Text="● DB HeosUpdate auf SQL 2005 Sicherung erstellen"/>
+                <LineBreak/>
                 <LineBreak/>
                 <Run Text="● DB HeosUpdate auf SQL 2005 Sicherung in aktuellen Ordner 1_SQL kopieren"/>
                 <LineBreak/>
@@ -142,4 +114,6 @@
 
         </Grid>
     </DockPanel>
+
+
 </Page>

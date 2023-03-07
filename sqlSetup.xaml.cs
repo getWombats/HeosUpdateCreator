@@ -23,8 +23,7 @@ namespace HeosUpdateCreator
 
         private void buttonZurueck_Click(object sender, RoutedEventArgs e)
         {
-            NavigationService ns = NavigationService.GetNavigationService(this);
-            ns.Navigate(new Uri("DateienKopieren.xaml", UriKind.Relative));
+            // Zurückfunktion
         }
     }
 }
