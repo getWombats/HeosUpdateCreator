@@ -9,11 +9,11 @@
     Height="580"
     Icon="app.ico"
     RenderOptions.ClearTypeHint="Auto"
-    ResizeMode="CanResizeWithGrip"
+    ResizeMode="NoResize"
     TextOptions.TextFormattingMode="Display"
     TextOptions.TextRenderingMode="Auto"
     WindowStartupLocation="CenterScreen"
-    WindowStyle="ThreeDBorderWindow"
+    WindowStyle="SingleBorderWindow"
     mc:Ignorable="d">
     <Window.Resources>
         <!--  Menu label style status checked  -->
@@ -176,7 +176,9 @@
             <Border
                 Grid.Row="2"
                 Grid.Column="1"
-                BorderBrush="LightGray"
+                Width="125"
+                HorizontalAlignment="Left"
+                BorderBrush="#ececec"
                 BorderThickness="0,1,0,1">
                 <StackPanel
                     Grid.Row="2"

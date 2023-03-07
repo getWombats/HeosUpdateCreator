@@ -1,8 +1,11 @@
 ﻿<Page
-    x:Class="HeosUpdateCreator.sql"
+    x:Class="HeosUpdateCreator.Page3"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    Title="SQL"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:local="clr-namespace:HeosUpdateCreator"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    Title="Page3"
     Width="700"
     Height="500"
     Background="White"
@@ -42,7 +45,6 @@
                 Grid.Column="3"
                 Margin="0,0,25,0"
                 HorizontalAlignment="Right"
-                Click="buttonWeiter_Click"
                 ClickMode="Release"
                 Style="{StaticResource buttonStyleBlue}">
                 <Button.Content>Weiter</Button.Content>
@@ -58,10 +60,10 @@
             </Grid.ColumnDefinitions>
             <Grid.RowDefinitions>
                 <RowDefinition Height="40" />
-                <RowDefinition Height="30" />
-                <RowDefinition Height="200" />
+                <RowDefinition Height="130" />
+                <RowDefinition Height="10" />
+                <RowDefinition Height="130" />
                 <RowDefinition Height="*" />
-                <RowDefinition Height="30" />
                 <RowDefinition Height="130" />
             </Grid.RowDefinitions>
 
@@ -77,38 +79,32 @@
                 Grid.ColumnSpan="2"
                 Margin="25,10,0,10"
                 HorizontalAlignment="Left"
-                Content="SQL Setup"
+                Content="Seite 3"
                 Style="{StaticResource headerTextStyle}" />
 
             <!--  Grid Row 1  -->
 
             <!--  Grid Row 2  -->
-            <TextBlock
-                Grid.Row="2"
-                Grid.Column="0"
-                Grid.ColumnSpan="2"
-                Margin="25,0,0,0"
-                VerticalAlignment="Top"
-                Style="{StaticResource textBlockNormalTextStyle}">
-                <Run Text="Das SQL-Setup wird auf einem PC mit einer SQL 2005 Instanz erstellt." />
-                <LineBreak />
-                <Run Text="SQL-Setupdatei und Datenbank erstellen:" />
-                <LineBreak />
-                <LineBreak />
-                <LineBreak />
-                <LineBreak />
-                <Run Text="● Aktuell DB HeosUpdate auf SQL 2005 Instanz importieren" />
-                <LineBreak />
-                <LineBreak />
-                <Run Text="● SQL-Setup auf DB HeosUpdate auf SQL 2005 ausführen" />
-                <LineBreak />
-                <LineBreak />
-                <Run Text="● DB HeosUpdate auf SQL 2005 Sicherung erstellen" />
-                <LineBreak />
-                <LineBreak />
-                <Run Text="● DB HeosUpdate auf SQL 2005 Sicherung in aktuellen Ordner 1_SQL kopieren" />
-                <LineBreak />
-            </TextBlock>
+            <!--<TextBlock Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" Style="{StaticResource textBlockNormalTextStyle}" VerticalAlignment="Top" Margin="25,0,0,0">
+                <Run Text="Das SQL-Setup wird auf einem PC mit einer SQL 2005 Instanz erstellt."/>
+                <LineBreak/>
+                <Run Text="SQL-Setupdatei und Datenbank erstellen:"/>
+                <LineBreak/>
+                <LineBreak/>
+                <LineBreak/>
+                <LineBreak/>
+                <Run Text="● Aktuell DB HeosUpdate auf SQL 2005 Instanz importieren"/>
+                <LineBreak/>
+                <LineBreak/>
+                <Run Text="● SQL-Setup auf DB HeosUpdate auf SQL 2005 ausführen"/>
+                <LineBreak/>
+                <LineBreak/>
+                <Run Text="● DB HeosUpdate auf SQL 2005 Sicherung erstellen"/>
+                <LineBreak/>
+                <LineBreak/>
+                <Run Text="● DB HeosUpdate auf SQL 2005 Sicherung in aktuellen Ordner 1_SQL kopieren"/>
+                <LineBreak/>
+            </TextBlock>-->
 
             <!--  Grid Row 3  -->
 

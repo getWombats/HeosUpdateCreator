@@ -26,6 +26,7 @@ namespace HeosUpdateCreator
         public DateienKopieren() // Main
         {
             InitializeComponent();
+
             DateiInfoQuellpfad();
             Check_Verzeichnispfade();
         }
@@ -36,8 +37,15 @@ namespace HeosUpdateCreator
 
         private void buttonWeiter_Click(object sender, RoutedEventArgs e)
         {
-            NavigationService ns = NavigationService.GetNavigationService(this);
-            ns.Navigate(new Uri("sqlSetup.xaml", UriKind.Relative));
+            if (!NavigationService.CanGoForward)
+            {
+                NavigationService ns = NavigationService.GetNavigationService(this);
+                ns.Navigate(new Uri("sqlSetup.xaml", UriKind.Relative));
+            }
+            else
+            {
+                NavigationService.GoForward();
+            }
         }
 
         private void buttonKopieren_Click(object sender, RoutedEventArgs e)
@@ -283,11 +291,12 @@ namespace HeosUpdateCreator
             {
                 DateiInfoZielpfad();
                 Labelstyle_Kopiervorgang_erfolgreich();
+                buttonWeiter.IsEnabled = true;
                 var window = Application.Current.MainWindow;
                 (window as MainWindow).menuLabelChecked_1.Visibility = Visibility.Visible;
             }
         }
-
-        #endregion Verzeichnis loeschen und Dateien kopieren
     }
+
+    #endregion Verzeichnis loeschen und Dateien kopieren
 }

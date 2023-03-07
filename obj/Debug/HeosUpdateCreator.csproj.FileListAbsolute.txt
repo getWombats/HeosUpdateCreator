@@ -42,3 +42,5 @@ C:\Programmentwicklung\c#\HeosUpdateCreator\obj\Debug\HeosUpdateCreator.pdb
 C:\Programmentwicklung\c#\HeosUpdateCreator\obj\Debug\HeosUpdateCreator_MarkupCompile.lref
 C:\Programmentwicklung\c#\HeosUpdateCreator\obj\Debug\App.baml
 C:\Programmentwicklung\HeosUpdateCreator\obj\Debug\App.baml
+C:\Programmentwicklung\c#\HeosUpdateCreator\obj\Debug\Page3.g.cs
+C:\Programmentwicklung\c#\HeosUpdateCreator\obj\Debug\Page3.baml

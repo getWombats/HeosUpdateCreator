@@ -54,7 +54,7 @@
             <Setter Property="Padding" Value="0" />
             <Setter Property="Width" Value="100" />
             <Setter Property="Height" Value="28" />
-            <Setter Property="Foreground" Value="#FF00C5FF" />
+            <Setter Property="Foreground" Value="#FF0097fb" />
             <Setter Property="FontFamily" Value="calibri" />
             <Setter Property="FontSize" Value="12" />
             <Setter Property="FontStyle" Value="Normal" />
@@ -64,7 +64,7 @@
                     <ControlTemplate TargetType="Button">
                         <Border
                             Background="White"
-                            BorderBrush="#FF00C5FF"
+                            BorderBrush="#FF0097fb"
                             BorderThickness="1.5"
                             CornerRadius="1">
                             <ContentPresenter
@@ -82,8 +82,8 @@
                         <Setter.Value>
                             <ControlTemplate TargetType="Button">
                                 <Border
-                                    Background="#FF00C5FF"
-                                    BorderBrush="#FF00C5FF"
+                                    Background="#FF0097fb"
+                                    BorderBrush="#FF0097fb"
                                     BorderThickness="1"
                                     CornerRadius="1">
                                     <ContentPresenter
@@ -103,6 +103,25 @@
                                 <Border
                                     Background="#FF007eff"
                                     BorderBrush="#FF00C5FF"
+                                    BorderThickness="1"
+                                    CornerRadius="1">
+                                    <ContentPresenter
+                                        Margin="{TemplateBinding Padding}"
+                                        HorizontalAlignment="Center"
+                                        VerticalAlignment="Center" />
+                                </Border>
+                            </ControlTemplate>
+                        </Setter.Value>
+                    </Setter>
+                </Trigger>
+                <Trigger Property="IsEnabled" Value="False">
+                    <Setter Property="Foreground" Value="#FFC2C2C2" />
+                    <Setter Property="Template">
+                        <Setter.Value>
+                            <ControlTemplate TargetType="Button">
+                                <Border
+                                    Background="White"
+                                    BorderBrush="#FFC2C2C2"
                                     BorderThickness="1"
                                     CornerRadius="1">
                                     <ContentPresenter
@@ -190,7 +209,7 @@
         </Style>
         <!--  .........................................  -->
 
-        <!--  Button style for rounded border  --><!--
+        <!--Button style for rounded border
         <Style x:Key="buttonStyleRounded" TargetType="{x:Type Button}">
             <Setter Property="FontFamily" Value="Arial" />
             <Setter Property="FontSize" Value="12" />
@@ -203,7 +222,7 @@
             <Setter Property="BorderThickness" Value="0" />
         </Style>
 
-        --><!--  Button outer border rounded style  --><!--
+          Button outer border rounded style
         <Style x:Key="buttonOuterBorderStyle" TargetType="{x:Type Border}">
             <Setter Property="Width" Value="127" />
             <Setter Property="Height" Value="27" />
@@ -222,7 +241,7 @@
             </Setter>
         </Style>
 
-        --><!--  Button inner border rounded style  --><!--
+          Button inner border rounded style
         <Style x:Key="buttonInnerBorderStyle" TargetType="{x:Type Border}">
             <Setter Property="Width" Value="129" />
             <Setter Property="Height" Value="29" />

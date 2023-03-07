@@ -17,13 +17,22 @@ namespace HeosUpdateCreator
 
         private void buttonWeiter_Click(object sender, RoutedEventArgs e)
         {
-            //NavigationService ns = NavigationService.GetNavigationService(this);
-            //ns.Navigate(new Uri("WEITERE_SEITEN.xaml", UriKind.Relative)); // weitere Seite einfügen
+            if (!NavigationService.CanGoForward)
+            {
+                NavigationService ns = NavigationService.GetNavigationService(this);
+                ns.Navigate(new Uri("Page3.xaml", UriKind.Relative));
+            }
+            else
+            {
+                NavigationService.GoForward();
+            }
+            var window = Application.Current.MainWindow;
+            (window as MainWindow).menuLabelChecked_2.Visibility = Visibility.Visible;
         }
 
         private void buttonZurueck_Click(object sender, RoutedEventArgs e)
         {
-            // Zurückfunktion
+            NavigationService.GoBack();
         }
     }
 }

@@ -10,12 +10,13 @@ namespace HeosUpdateCreator
     /// </summary>
     public partial class App : Application
     {
+
         protected override void OnStartup(StartupEventArgs e)
         {
             base.OnStartup(e);
 
-            //string s_hostname = "ANDRES";
-            string s_hostname = "HRDWS59";
+            string s_hostname = "ANDRES";
+            //string s_hostname = "HRDWS59";
 
             //splash Fenster initialisieren und als MainWindow setzen
             var splashScreen = new Programmstart();
@@ -46,6 +47,10 @@ namespace HeosUpdateCreator
                     splashScreen.Close();
                 });
             });
+        }
+        public static void lalala()
+        {
+            //sfdsnfgskl
         }
     }
 }
