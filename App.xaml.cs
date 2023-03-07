@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 
@@ -13,8 +14,8 @@ namespace HeosUpdateCreator
         {
             base.OnStartup(e);
 
-            string s_hostname = "ANDRES";
-            //string s_hostname = "HRDWS59";
+            //string s_hostname = "ANDRES";
+            string s_hostname = "HRDWS59";
 
             //splash Fenster initialisieren und als MainWindow setzen
             var splashScreen = new Programmstart();
@@ -31,7 +32,7 @@ namespace HeosUpdateCreator
             Task.Factory.StartNew(() =>
             {
                 //Ladevorgang simulieren
-                System.Threading.Thread.Sleep(200);
+                Thread.Sleep(1000);
 
                 // zum UI Thread zurückkehren
                 this.Dispatcher.Invoke(() =>

@@ -5,7 +5,7 @@
     Title="DateienKopieren"
     Width="700"
     Height="500"
-    Background="Transparent"
+    Background="White"
     KeepAlive="True">
 
     <DockPanel LastChildFill="True">
@@ -83,9 +83,9 @@
                 <RowDefinition Height="40" />
                 <RowDefinition Height="30" />
                 <RowDefinition Height="200" />
-                <RowDefinition Height="10" />
-                <RowDefinition Height="30" />
                 <RowDefinition Height="*" />
+                <RowDefinition Height="30" />
+                <RowDefinition Height="130" />
             </Grid.RowDefinitions>
 
             <Border
@@ -197,12 +197,25 @@
                 Visibility="Hidden" />
 
             <Label
-                x:Name="labelCopyFileInfo"
+                x:Name="labelCopyFileCount"
                 Grid.Row="6"
+                Width="50"
                 Margin="25,0,0,15"
                 VerticalAlignment="Bottom"
+                HorizontalAlignment="Left"
+                HorizontalContentAlignment="Right"
+                Content=""
+                Style="{StaticResource labelNormalTextStyle}"
+                Visibility="Hidden" />
+            <Label
+                x:Name="labelCopyFileTotal"
+                Grid.Row="6"
+                Width="150"
+                Margin="80,0,0,15"
+                VerticalAlignment="Bottom"
+                HorizontalAlignment="Left"
                 HorizontalContentAlignment="Left"
-                Content="informations"
+                Content="/"
                 Style="{StaticResource labelNormalTextStyle}"
                 Visibility="Hidden" />
 
@@ -210,7 +223,7 @@
                 x:Name="copyProgressBar"
                 Grid.Row="6"
                 Width="300"
-                Height="15"
+                Height="17"
                 Margin="0,0,0,35"
                 VerticalAlignment="Bottom"
                 Background="White"
@@ -218,7 +231,7 @@
                 BorderThickness="1"
                 Cursor="Arrow"
                 Foreground="#FF0097fb"
-                Visibility="Hidden" />
+                Visibility="Visible" />
         </Grid>
     </DockPanel>
 </Page>

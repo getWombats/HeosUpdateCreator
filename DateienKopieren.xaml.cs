@@ -1,7 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
+using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
@@ -14,9 +14,10 @@ namespace HeosUpdateCreator
     /// </summary>
     public partial class DateienKopieren : Page
     {
-
         private static string s_sourcePath = @"O:\ENT\ENT Soria\Temp\Quellverzeichnis";
         private static string s_targetPath = @"C:\Zielverzeichnis";
+
+        private static int totalAllFiles = Directory.GetDirectories(s_sourcePath, "*", SearchOption.AllDirectories).Count() + Directory.GetFiles(s_sourcePath, "*.*", SearchOption.AllDirectories).Count();
 
         // Backgroundworker initialisieren
         private BackgroundWorker worker = null;
@@ -27,7 +28,7 @@ namespace HeosUpdateCreator
         {
             InitializeComponent();
 
-            Load_Verzeichnisinfo();
+            //Load_Verzeichnisinfo();
 
             Check_Path_exists();
         }
@@ -49,15 +50,16 @@ namespace HeosUpdateCreator
                 Worker_Initialisieren();
 
                 Verzeichnisinhalt_Loeschen();
+
                 if (worker.IsBusy != true)
                 {
                     Labelstyle_Kopiervorgang_start();
 
-                    worker.RunWorkerAsync(1000);
+                    worker.RunWorkerAsync();
                 }
                 else
                 {
-                    //sdsdf
+                    MessageBox.Show("Backgroundworker-Thread ist noch aktiv");
                 }
             }
         }
@@ -73,16 +75,28 @@ namespace HeosUpdateCreator
 
         private void Labelstyle_Kopiervorgang_start()
         {
+            var converter = new BrushConverter();
+
+            buttonKopieren.Visibility = Visibility.Hidden;
+
+            buttonAbbrechen.Visibility = Visibility.Visible;
+
+            //labelCopyFileTotal.Visibility = Visibility.Visible;
+            //labelCopyFileTotal.Content = "/ " + totalAllFiles.ToString() + " Dateien";
+
+            //labelCopyFileCount.Visibility = Visibility.Visible;
+
             labelCopyInProgress.Content = "Dateien werden kopiert...";
             labelCopyInProgress.FontWeight = FontWeights.Regular;
             labelCopyInProgress.Foreground = Brushes.Black;
             labelCopyInProgress.Visibility = Visibility.Visible;
+
             labelCopyProgressPercent.Visibility = Visibility.Visible;
-            labelCopyFileInfo.Visibility = Visibility.Visible;
-            buttonAbbrechen.Visibility = Visibility.Visible;
+
             copyProgressBar.Visibility = Visibility.Visible;
+            copyProgressBar.Foreground = (Brush)converter.ConvertFromString("#FF0097fb");
+            copyProgressBar.IsIndeterminate = false;
             copyProgressBar.Value = 0;
-            buttonKopieren.Visibility = Visibility.Hidden;
         }
 
         private void Labelstyle_Kopiervorgang_abgebrochen()
@@ -91,7 +105,7 @@ namespace HeosUpdateCreator
             labelCopyInProgress.FontWeight = FontWeights.Bold;
             labelCopyInProgress.Foreground = Brushes.Red;
             labelCopyProgressPercent.Visibility = Visibility.Hidden;
-            labelCopyFileInfo.Visibility = Visibility.Hidden;
+            //labelCopyFileCount.Visibility = Visibility.Hidden;
             buttonAbbrechen.Visibility = Visibility.Hidden;
             buttonKopieren.Visibility = Visibility.Visible;
             copyProgressBar.Value = 0;
@@ -101,7 +115,7 @@ namespace HeosUpdateCreator
         {
             labelCopyInProgress.Content = "Daten erfolgreich kopiert";
             labelCopyProgressPercent.Visibility = Visibility.Hidden;
-            labelCopyFileInfo.Visibility = Visibility.Hidden;
+            labelCopyFileCount.Visibility = Visibility.Hidden;
             buttonAbbrechen.Visibility = Visibility.Hidden;
             copyProgressBar.Value = 100;
         }
@@ -141,9 +155,6 @@ namespace HeosUpdateCreator
 
         public void worker_DoWork(object sender, DoWorkEventArgs eDoWork)
         {
-            string[] fileList = Directory.GetFiles(s_sourcePath);
-            string[] dirList = Directory.GetDirectories(s_sourcePath);
-
             int count = 0;
 
             foreach (string dirPath in Directory.GetDirectories(s_sourcePath, "*", SearchOption.AllDirectories))
@@ -155,9 +166,8 @@ namespace HeosUpdateCreator
                 }
                 Directory.CreateDirectory(dirPath.Replace(s_sourcePath, s_targetPath));
                 count++;
-                (sender as BackgroundWorker).ReportProgress(count);
+                worker.ReportProgress(count * 100 / totalAllFiles);
             }
-
             foreach (string newPath in Directory.GetFiles(s_sourcePath, "*.*", SearchOption.AllDirectories))
             {
                 if (worker.CancellationPending == true)
@@ -167,43 +177,14 @@ namespace HeosUpdateCreator
                 }
                 File.Copy(newPath, newPath.Replace(s_sourcePath, s_targetPath), true);
                 count++;
-                (sender as BackgroundWorker).ReportProgress(count);
+                worker.ReportProgress(count * 100 / totalAllFiles);
             }
             eDoWork.Result = count;
         }
 
-
-        //private void worker_DoWork(object sender, DoWorkEventArgs eDoWork)
-        //{
-        //    int max = (int)eDoWork.Argument;
-        //    int result = 0;
-        //    for (int i = 0; i < max; i++)
-        //    {
-        //        if (worker.CancellationPending == true)
-        //        {
-        //            eDoWork.Cancel = true;
-        //            return;
-        //        }
-        //        int progressPercentage = Convert.ToInt32(((double)i / max) * 100);
-        //        if (i % 42 == 0)
-        //        {
-        //            result++;
-        //            (sender as BackgroundWorker).ReportProgress(progressPercentage, i);
-        //        }
-        //        else
-        //        {
-        //            (sender as BackgroundWorker).ReportProgress(progressPercentage);
-        //        }
-
-        //        System.Threading.Thread.Sleep(1);
-        //    }
-        //    eDoWork.Result = result;
-        //}
-
         private void worker_copyProgressBarUpdate(object sender, ProgressChangedEventArgs uiUpdate)
         {
             copyProgressBar.Value = uiUpdate.ProgressPercentage;
-            labelCopyFileInfo.Content = uiUpdate.UserState;
             labelCopyProgressPercent.Content = uiUpdate.ProgressPercentage.ToString() + "%";
         }
 
@@ -225,33 +206,53 @@ namespace HeosUpdateCreator
 
         #region Verzeichnisinhalt löschen
 
-        public void Verzeichnisinhalt_Loeschen()
+        private void Verzeichnisinhalt_Loeschen()
         {
             MessageBoxResult msgRes = MessageBox.Show("Alle Dateien im Verzeichnis [ " + s_targetPath + " ] werden gelöscht!", "Achtung", MessageBoxButton.OKCancel, MessageBoxImage.Warning);
 
             if (msgRes == MessageBoxResult.OK)
             {
+                labelCopyInProgress.Visibility = Visibility.Visible;
+                labelCopyInProgress.Content = "Verzeichnisinhalt wird gelöscht...";
+                copyProgressBar.Visibility = Visibility.Visible;
+                copyProgressBar.Foreground = Brushes.Red;
+                copyProgressBar.IsIndeterminate = true;
+
                 try
                 {
-                    DirectoryInfo dirInfo = new DirectoryInfo(s_targetPath);
+                    int count = 0;
 
-                    foreach (FileInfo fi in dirInfo.EnumerateFiles())
+                    //int totalAllFiles = Directory.GetDirectories(s_targetPath, "*", SearchOption.AllDirectories).Count() + Directory.GetFiles(s_targetPath, "*.*", SearchOption.AllDirectories).Count();
+
+                    var dirInfo = new DirectoryInfo(s_targetPath);
+
+                    foreach (FileInfo file in dirInfo.GetFiles())
                     {
-                        fi.Delete();
+                        file.Delete();
+                        //count++;
+                        //worker.ReportProgress(count * 100 / totalAllFiles);
                     }
+
                     foreach (DirectoryInfo dir in dirInfo.GetDirectories())
                     {
                         dir.Delete(true);
+                        //count++;
+                        //worker.ReportProgress(count * 100 / totalAllFiles);
                     }
+
+                    copyProgressBar.Visibility = Visibility.Hidden;
+                    labelCopyInProgress.Content = "";
                 }
                 catch (Exception e)
                 {
+                    labelCopyInProgress.Visibility = Visibility.Hidden;
+                    copyProgressBar.Visibility = Visibility.Hidden;
                     MessageBox.Show("Ein Fehler ist aufgetreten:\n" + Convert.ToString(e), "Fehler", MessageBoxButton.OK, MessageBoxImage.Error);
                 }
             }
-            else
+            else if (msgRes == MessageBoxResult.Cancel)
             {
-                //dsds
+                return;
             }
         }
 
@@ -259,31 +260,30 @@ namespace HeosUpdateCreator
 
         #region Verzeichnisinhalt in dataGrid darstellen
 
-        private void Load_Verzeichnisinfo()
-        {
-            if (Directory.Exists(s_sourcePath))
-            {
+        //public void Load_Verzeichnisinfo()
+        //{
+        //    if (Directory.Exists(s_sourcePath))
+        //    {
+        //        string[] sld = Directory.GetFiles(s_sourcePath, "*.exe");
+        //        //DirectoryInfo dirInfo = new DirectoryInfo(s_sourcePath);
 
-                string[] sld = Directory.GetFiles(s_sourcePath, "*.exe");
-                //DirectoryInfo dirInfo = new DirectoryInfo(s_sourcePath);
+        //        //List<string> sld = new List<string>();
 
-                //List<string> sld = new List<string>();
+        //        //foreach (FileInfo fi in dirInfo.EnumerateFiles())
+        //        //{
+        //        //    sld.Add(fi.ToString());
+        //        //    //dataGridSourcePath.Items.Add(fi);
+        //        //}
+        //        //dataGridSourcePath.ItemsSource = sld;
 
-                //foreach (FileInfo fi in dirInfo.EnumerateFiles())
-                //{
-                //    sld.Add(fi.ToString());
-                //    //dataGridSourcePath.Items.Add(fi);
-                //}
-                //dataGridSourcePath.ItemsSource = sld;
+        //        //foreach (DirectoryInfo dir in dirInfo.GetDirectories())
+        //        //{
+        //        //    sld.Add(dir.ToString());
+        //        //}
+        //        dataGridSourcePath.ItemsSource = sld;
+        //    }
+        //}
 
-                //foreach (DirectoryInfo dir in dirInfo.GetDirectories())
-                //{
-                //    sld.Add(dir.ToString());
-                //}
-                dataGridSourcePath.ItemsSource = sld;
-            }
-        }
-
-        #endregion Ordnerinhalt darstellen
+        #endregion Verzeichnisinhalt in dataGrid darstellen
     }
 }
