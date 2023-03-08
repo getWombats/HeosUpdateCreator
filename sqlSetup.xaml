@@ -34,7 +34,7 @@
                 ClickMode="Release"
                 Style="{StaticResource buttonStyleBlue}"
                 Visibility="Visible">
-                <Button.Content>Zurück</Button.Content>
+                <Button.Content>&lt;&lt; Zurück</Button.Content>
             </Button>
 
             <Button
@@ -44,8 +44,9 @@
                 HorizontalAlignment="Right"
                 Click="buttonWeiter_Click"
                 ClickMode="Release"
+
                 Style="{StaticResource buttonStyleBlue}">
-                <Button.Content>Weiter</Button.Content>
+                <Button.Content>Weiter &gt;&gt;</Button.Content>
             </Button>
 
         </Grid>

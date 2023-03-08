@@ -26,8 +26,6 @@ namespace HeosUpdateCreator
         public DateienKopieren() // Main
         {
             InitializeComponent();
-
-            DateiInfoQuellpfad();
             Check_Verzeichnispfade();
         }
 
@@ -55,7 +53,7 @@ namespace HeosUpdateCreator
                 MessageBoxResult msgRes = MessageBox.Show("Alle Dateien im Verzeichnis [ " + s_targetPath + " ] werden gelöscht!", "Achtung", MessageBoxButton.OKCancel, MessageBoxImage.Warning);
                 if (msgRes == MessageBoxResult.OK)
                 {
-                    Worker_Initialisieren();
+                    KopierWorkerInitialisieren();
 
                     if (worker.IsBusy != true)
                     {
@@ -77,6 +75,7 @@ namespace HeosUpdateCreator
 
         private void buttonAbbrechen_Click(object sender, RoutedEventArgs e)
         {
+            Labelstyle_Kopiervorgang_abgebrochen();
             worker.CancelAsync();
         }
 
@@ -134,11 +133,6 @@ namespace HeosUpdateCreator
 
             buttonAbbrechen.Visibility = Visibility.Visible;
 
-            //labelCopyFileTotal.Visibility = Visibility.Visible;
-            //labelCopyFileTotal.Content = "/ " + totalAllFiles.ToString() + " Dateien";
-
-            //labelCopyFileCount.Visibility = Visibility.Visible;
-
             labelCopyInProgress.Content = "Dateien werden kopiert...";
             labelCopyInProgress.FontWeight = FontWeights.Regular;
             labelCopyInProgress.Foreground = Brushes.Black;
@@ -159,11 +153,11 @@ namespace HeosUpdateCreator
             labelCopyInProgress.Foreground = Brushes.Red;
             labelCopyProgressPercent.Visibility = Visibility.Hidden;
             labelCopyProgressPercent.Content = "";
-            //labelCopyFileCount.Visibility = Visibility.Hidden;
+
             buttonAbbrechen.Visibility = Visibility.Hidden;
             buttonKopieren.Visibility = Visibility.Visible;
             buttonKopieren.Content = "Wiederholen";
-            copyProgressBar.Value = 0;
+            //copyProgressBar.Value = 0;
         }
 
         private void Labelstyle_Kopiervorgang_erfolgreich()
@@ -171,6 +165,9 @@ namespace HeosUpdateCreator
             labelCopyInProgress.Content = "Daten erfolgreich kopiert";
             labelCopyProgressPercent.Visibility = Visibility.Hidden;
             labelCopyFileCount.Visibility = Visibility.Hidden;
+
+            labelCopiedFilesInfo.Visibility = Visibility.Visible;
+
             buttonAbbrechen.Visibility = Visibility.Hidden;
             copyProgressBar.Value = 100;
         }
@@ -179,8 +176,22 @@ namespace HeosUpdateCreator
         {
             if (!Directory.Exists(s_sourcePath))
             {
-                MessageBox.Show("Das Quellverzeichnis konnte nicht gefunden werden.\n Die Anwendung wird beendet.\n Wendern Sie sich an PinkPanther", "Fehler", MessageBoxButton.OK, MessageBoxImage.Error);
-                Environment.Exit(0);
+                MessageBox.Show("Das Quellverzeichnis wurde nicht gefunden.\n \nNavigieren Sie im folgenden Fenster zum Quellverzeichnis und drücken Sie OK.", "Fehler", MessageBoxButton.OK, MessageBoxImage.Error);
+                using (var dialog = new System.Windows.Forms.FolderBrowserDialog())
+                {
+                    System.Windows.Forms.DialogResult result = dialog.ShowDialog();
+
+                    if (result != System.Windows.Forms.DialogResult.OK)
+                    {
+                        Application.Current.MainWindow.Close();
+                    }
+                    else
+                    {
+                        s_sourcePath = dialog.SelectedPath;
+                        labelOriginPath.Content = "Quellverzeichnis: " + s_sourcePath;
+                        DateiInfoQuellpfad();
+                    }
+                }
             }
             else
             {
@@ -190,7 +201,7 @@ namespace HeosUpdateCreator
             if (!Directory.Exists(s_targetPath))
             {
                 DirectoryInfo di = Directory.CreateDirectory(s_targetPath);
-                MessageBox.Show("Das Zielverzeichnis konnte nicht gefunden werden.\n Es wurde ein neues Verzeichnis angelegt.", "Information", MessageBoxButton.OK, MessageBoxImage.Information);
+                MessageBox.Show("Das Zielverzeichnis konnte nicht gefunden werden.\nEs wurde ein neues Verzeichnis mit dem angegebenen Pfad angelegt.", "Information", MessageBoxButton.OK, MessageBoxImage.Information);
                 labelTargetPath.Content = "Zielverzeichnis: " + s_targetPath;
             }
             else
@@ -203,18 +214,18 @@ namespace HeosUpdateCreator
 
         #region Verzeichnis loeschen und Dateien kopieren
 
-        private void Worker_Initialisieren()
+        private void KopierWorkerInitialisieren()
         {
             worker = new BackgroundWorker();
             worker.WorkerSupportsCancellation = true;
             worker.WorkerReportsProgress = true;
 
-            worker.DoWork += worker_DoWork;
+            worker.DoWork += worker_KopierenStart;
             worker.ProgressChanged += worker_copyProgressBarUpdate;
             worker.RunWorkerCompleted += worker_copyCompleted;
         }
 
-        public void worker_DoWork(object sender, DoWorkEventArgs eDoWork)
+        public void worker_KopierenStart(object sender, DoWorkEventArgs eDoWork)
         {
             int totalAllFiles = Directory.GetDirectories(s_sourcePath, "*", SearchOption.AllDirectories).Count() + Directory.GetFiles(s_sourcePath, "*.*", SearchOption.AllDirectories).Count();
 
@@ -243,13 +254,32 @@ namespace HeosUpdateCreator
                 }
                 Thread.Sleep(1500);
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                MessageBox.Show("Ein Fehler ist aufgetreten:\n" + Convert.ToString(e), "Fehler", MessageBoxButton.OK, MessageBoxImage.Error);
+                string fileName = DateTime.Now.ToString("ddMMyy-HHmm") + "-Log.txt";
+                string logpfad = @"C:\Programmentwicklung\Logs\" + fileName;
+
+                MessageBox.Show("Ein Fehler ist aufgetreten:\nLogfile in" + logpfad + " geschrieben\n\n"  + Convert.ToString(ex), "Fehler", MessageBoxButton.OK, MessageBoxImage.Error);
+
+                using (StreamWriter writer = new StreamWriter(logpfad, true))
+                {
+                    writer.WriteLine("-----------------------------------------------------------------------------");
+                    writer.WriteLine("Datum : " + DateTime.Now.ToString());
+                    writer.WriteLine();
+
+                    while (ex != null)
+                    {
+                        writer.WriteLine(ex.GetType().FullName);
+                        writer.WriteLine("Message : " + ex.Message);
+                        writer.WriteLine("StackTrace : " + ex.StackTrace);
+
+                        ex = ex.InnerException;
+                    }
+                }
             }
 
-            int count = 0;
 
+            int count = 0;
             foreach (string dirPath in Directory.GetDirectories(s_sourcePath, "*", SearchOption.AllDirectories))
             {
                 if (worker.CancellationPending == true)
@@ -285,7 +315,7 @@ namespace HeosUpdateCreator
         {
             if (eComplete.Cancelled)
             {
-                Labelstyle_Kopiervorgang_abgebrochen();
+                copyProgressBar.Value = 0;
             }
             else
             {

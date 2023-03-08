@@ -55,7 +55,7 @@
                 HorizontalAlignment="Right"
                 Style="{StaticResource buttonStyleBlue}"
                 Visibility="Hidden">
-                <Button.Content>Zurück</Button.Content>
+                <Button.Content>&lt;&lt; Zurück</Button.Content>
             </Button>
 
             <Button
@@ -67,7 +67,7 @@
                 ClickMode="Release"
                 IsEnabled="False"
                 Style="{StaticResource buttonStyleBlue}">
-                <Button.Content>Weiter</Button.Content>
+                <Button.Content>Weiter &gt;&gt;</Button.Content>
             </Button>
         </Grid>
 
@@ -90,7 +90,7 @@
                 Grid.RowSpan="6"
                 Grid.ColumnSpan="2"
                 BorderBrush="#FFF3F3F3"
-                BorderThickness="2,0,0,2" />
+                BorderThickness="0,0,0,1" />
 
             <!--  Grid Row 0  -->
             <Label
@@ -146,15 +146,25 @@
                     VerticalAlignment="Top"
                     Content="Zielverzeichnis:"
                     Style="{StaticResource labelNormalTextStyle}" />
-
                 <Label
-                    x:Name="labelCountFilesTargetPath"
+                    x:Name="labelCopiedFilesInfo"
                     Grid.Row="1"
                     Margin="0,10,0,0"
                     HorizontalAlignment="Left"
                     VerticalAlignment="Top"
+                    Content="Kopierte Elemente:"
+                    Foreground="BlueViolet"
+                    Style="{StaticResource labelNormalTextStyle}"
+                    Visibility="Hidden" />
+
+                <Label
+                    x:Name="labelCountFilesTargetPath"
+                    Grid.Row="1"
+                    Margin="0,5,0,0"
+                    HorizontalAlignment="Left"
+                    VerticalAlignment="Top"
                     Content=""
-                    Foreground="Blue"
+                    Foreground="BlueViolet"
                     Style="{StaticResource labelNormalTextStyle}" />
 
                 <Label
@@ -164,7 +174,7 @@
                     HorizontalAlignment="Left"
                     VerticalAlignment="Top"
                     Content=""
-                    Foreground="Blue"
+                    Foreground="BlueViolet"
                     Style="{StaticResource labelNormalTextStyle}" />
             </StackPanel>
 
