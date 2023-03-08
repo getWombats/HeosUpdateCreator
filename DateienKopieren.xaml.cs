@@ -15,8 +15,9 @@ namespace HeosUpdateCreator
     /// </summary>
     public partial class DateienKopieren : Page
     {
-        private static string s_sourcePath = @"O:\ENT\ENT Soria\Temp\Quellverzeichnis";
-        private static string s_targetPath = @"C:\Zielverzeichnis";
+        private string s_sourcePath = @"O:\ENT\ENT Soria\Temp\Quellverzeichnis";
+        private string s_targetPath = @"C:\Zielverzeichnis";
+        private string logpfad = @"C:\Programmentwicklung\Logs\";
 
         // Backgroundworker initialisieren
         private BackgroundWorker worker = null;
@@ -229,55 +230,81 @@ namespace HeosUpdateCreator
         {
             int totalAllFiles = Directory.GetDirectories(s_sourcePath, "*", SearchOption.AllDirectories).Count() + Directory.GetFiles(s_sourcePath, "*.*", SearchOption.AllDirectories).Count();
 
-            try
+
+            // neue Variante Filedelete - funktioniert
+            foreach (string sFile in Directory.GetFiles(s_targetPath))
             {
-                var dirInfo = new DirectoryInfo(s_targetPath);
-
-                foreach (FileInfo file in dirInfo.GetFiles())
+                if (worker.CancellationPending == true)
                 {
-                    if (worker.CancellationPending == true)
-                    {
-                        eDoWork.Cancel = true;
-                        return;
-                    }
-                    file.Delete();
+                    eDoWork.Cancel = true;
+                    return;
                 }
-
-                foreach (DirectoryInfo dir in dirInfo.GetDirectories())
+                try
                 {
-                    if (worker.CancellationPending == true)
+                    File.Delete(sFile);
+                }
+                catch (Exception ex)
+                {
+                    if (ex is UnauthorizedAccessException)
                     {
-                        eDoWork.Cancel = true;
-                        return;
+                        File.SetAttributes(sFile, FileAttributes.Normal);
+                        File.Delete(sFile);
                     }
+                    else
+                    {
+                        KopierenExceptionLogfile(ex, "Datei");
+                    }
+                }
+            }
+
+            // Löschen von schreibgeschütztem .git Verzeichnis fehlt noch
+            var dirInfo = new DirectoryInfo(s_targetPath);
+
+
+            // Dateien löschen alte Version
+            //foreach (FileInfo file in dirInfo.GetFiles())
+            //{
+            //    if (worker.CancellationPending == true)
+            //    {
+            //        eDoWork.Cancel = true;
+            //        return;
+            //    }
+            //    try
+            //    {
+            //        file.Delete();
+            //    }
+            //    catch (Exception ex)
+            //    {
+            //        KopierenExceptionLogfile(ex, "File");
+            //    }
+            //}
+
+            foreach (DirectoryInfo dir in dirInfo.GetDirectories())
+            {
+                if (worker.CancellationPending == true)
+                {
+                    eDoWork.Cancel = true;
+                    return;
+                }
+                try
+                {
                     dir.Delete(true);
                 }
-                Thread.Sleep(1500);
-            }
-            catch (Exception ex)
-            {
-                string fileName = DateTime.Now.ToString("ddMMyy-HHmm") + "-Log.txt";
-                string logpfad = @"C:\Programmentwicklung\Logs\" + fileName;
-
-                MessageBox.Show("Ein Fehler ist aufgetreten:\nLogfile in" + logpfad + " geschrieben\n\n"  + Convert.ToString(ex), "Fehler", MessageBoxButton.OK, MessageBoxImage.Error);
-
-                using (StreamWriter writer = new StreamWriter(logpfad, true))
+                catch (Exception ex)
                 {
-                    writer.WriteLine("-----------------------------------------------------------------------------");
-                    writer.WriteLine("Datum : " + DateTime.Now.ToString());
-                    writer.WriteLine();
-
-                    while (ex != null)
+                    if (ex is UnauthorizedAccessException)
                     {
-                        writer.WriteLine(ex.GetType().FullName);
-                        writer.WriteLine("Message : " + ex.Message);
-                        writer.WriteLine("StackTrace : " + ex.StackTrace);
-
-                        ex = ex.InnerException;
+                        dir.Attributes &= ~FileAttributes.ReadOnly;
+                        dir.Delete(true);
+                    }
+                    else
+                    {
+                        KopierenExceptionLogfile(ex, "Ordner");
                     }
                 }
             }
 
+            Thread.Sleep(1500);
 
             int count = 0;
             foreach (string dirPath in Directory.GetDirectories(s_sourcePath, "*", SearchOption.AllDirectories))
@@ -324,9 +351,60 @@ namespace HeosUpdateCreator
                 buttonWeiter.IsEnabled = true;
                 var window = Application.Current.MainWindow;
                 (window as MainWindow).menuLabelChecked_1.Visibility = Visibility.Visible;
+
+                int totalFiles = Directory.GetFiles(s_targetPath, "*.*", SearchOption.AllDirectories).Count();
+                int totalDirectories = Directory.GetDirectories(s_targetPath, "*", SearchOption.AllDirectories).Count();
+                KopierLogfileSchreiben(totalFiles,totalDirectories);
             }
         }
-    }
+
 
     #endregion Verzeichnis loeschen und Dateien kopieren
+
+        #region Exception Handling / Logfiles
+
+        private void KopierenExceptionLogfile(Exception ex, string name)
+        {
+            string logName = DateTime.Now.ToString("ddMMyy-HHmm") + "-" + name + "-Log.txt";
+            string logdir = logpfad + logName;
+
+            MessageBox.Show("Ein Fehler ist aufgetreten:\nLogfile in" + logdir + " geschrieben\n\n" + Convert.ToString(ex), "Fehler", MessageBoxButton.OK, MessageBoxImage.Error);
+
+            using (StreamWriter writer = new StreamWriter(logdir, true))
+            {
+                writer.WriteLine("-----------------------------------------------------------------------------");
+                writer.WriteLine("Datum : " + DateTime.Now.ToString());
+                writer.WriteLine();
+
+                while (ex != null)
+                {
+                    writer.WriteLine(ex.GetType().FullName);
+                    writer.WriteLine("Message : " + ex.Message);
+                    writer.WriteLine("StackTrace : " + ex.StackTrace);
+
+                    ex = ex.InnerException;
+                }
+            }
+        }
+        private void KopierLogfileSchreiben(int anzahlDateien, int anzahlOrdner)
+        {
+            string logName = DateTime.Now.ToString("ddMMyy-HHmm") + "-Kopieren_Log.txt";
+            string logdir = logpfad + logName;
+
+         
+            using (StreamWriter writer = new StreamWriter(logdir, true))
+            {
+                writer.WriteLine("-----------------------------------------------------------------------------");
+                writer.WriteLine();
+                writer.WriteLine("Datum : " + DateTime.Now.ToString("dd.MM.yyyy HH:mm:ss"));
+                writer.WriteLine("Quellverzeichnis: " + s_sourcePath);
+                writer.WriteLine("Zielverzeichnis: " + s_targetPath);
+                writer.WriteLine(anzahlDateien + " Dateien und " + anzahlOrdner + " Ordner erfolgreich kopiert");
+                writer.WriteLine();
+                writer.WriteLine("-----------------------------------------------------------------------------");
+            }
+        }
+
+        #endregion
+    }
 }
