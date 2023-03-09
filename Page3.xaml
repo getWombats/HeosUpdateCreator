@@ -70,9 +70,9 @@
             <Border
                 Grid.RowSpan="6"
                 Grid.ColumnSpan="2"
+                Margin="10,0,10,0"
                 BorderBrush="#FFF3F3F3"
-                BorderThickness="0,0,0,1"
-                Margin="10,0,10,0"/>
+                BorderThickness="0,0,0,1" />
 
             <!--  Grid Row 0  -->
             <Label
@@ -80,7 +80,7 @@
                 Grid.ColumnSpan="2"
                 Margin="25,10,0,10"
                 HorizontalAlignment="Left"
-                Content="Seite 3"
+                Content="Programmstruktur"
                 Style="{StaticResource headerTextStyle}" />
 
             <!--  Grid Row 1  -->
