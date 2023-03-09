@@ -15,12 +15,19 @@ namespace HeosUpdateCreator
     /// </summary>
     public partial class DateienKopieren : Page
     {
-        private string s_sourcePath = @"O:\ENT\ENT Soria\Temp\Quellverzeichnis";
-        private string s_targetPath = @"C:\Zielverzeichnis";
-        private string logpfad = @"C:\Programmentwicklung\Logs\";
+
+        // Allgemeine Werte initialisieren
+        private static string s_quellVerzeichnis = @"O:\ENT\ENT Soria\Temp\Quellverzeichnis";
+        private static string s_zielVerzeichnis = @"C:\Zielverzeichnis";
+        private static string logpfad = @"C:\Programmentwicklung\Logs\";
+
+        private static int totalDateienCount = Directory.GetFiles(s_quellVerzeichnis, "*.*", SearchOption.AllDirectories).Count();
+        private static int totalOrdnerCount = Directory.GetDirectories(s_quellVerzeichnis, "*", SearchOption.AllDirectories).Count();
+        private static int totalElementeCount = totalDateienCount + totalOrdnerCount;
 
         // Backgroundworker initialisieren
-        private BackgroundWorker worker = null;
+        private BackgroundWorker KopierWorker = null;
+        private BackgroundWorker LoeschWorker = null;
 
         #region Main
 
@@ -28,6 +35,7 @@ namespace HeosUpdateCreator
         {
             InitializeComponent();
             Check_Verzeichnispfade();
+            DateiInfoQuellpfad();
         }
 
         #endregion Main
@@ -49,23 +57,14 @@ namespace HeosUpdateCreator
 
         private void buttonKopieren_Click(object sender, RoutedEventArgs e)
         {
-            if (Directory.Exists(s_sourcePath) && Directory.Exists(s_targetPath))
+            if (Directory.Exists(s_quellVerzeichnis) && Directory.Exists(s_zielVerzeichnis))
             {
-                MessageBoxResult msgRes = MessageBox.Show("Alle Dateien im Verzeichnis [ " + s_targetPath + " ] werden gelöscht!", "Achtung", MessageBoxButton.OKCancel, MessageBoxImage.Warning);
+                MessageBoxResult msgRes = MessageBox.Show("Alle Dateien im Verzeichnis [ " + s_zielVerzeichnis + " ] werden gelöscht!", "Achtung", MessageBoxButton.OKCancel, MessageBoxImage.Warning);
                 if (msgRes == MessageBoxResult.OK)
                 {
                     KopierWorkerInitialisieren();
-
-                    if (worker.IsBusy != true)
-                    {
-                        Labelstyle_Kopiervorgang_start();
-
-                        worker.RunWorkerAsync();
-                    }
-                    else
-                    {
-                        MessageBox.Show("Backgroundworker-Thread ist noch aktiv");
-                    }
+                    LoeschWorkerInitialisieren();
+                    LoeschWorker.RunWorkerAsync();
                 }
                 else
                 {
@@ -76,54 +75,56 @@ namespace HeosUpdateCreator
 
         private void buttonAbbrechen_Click(object sender, RoutedEventArgs e)
         {
-            Labelstyle_Kopiervorgang_abgebrochen();
-            worker.CancelAsync();
+            if (KopierWorker.IsBusy)
+            {
+                KopierWorker.CancelAsync();
+            }
+            else if (LoeschWorker.IsBusy)
+            {
+                LoeschWorker.CancelAsync();
+            }
         }
 
         #endregion Buttons
 
-        #region Grafik (Labelaenderungen)
+        #region Grafik Labelaenderungen
 
         private void DateiInfoQuellpfad()
         {
-            int totalFiles = Directory.GetFiles(s_sourcePath, "*.*", SearchOption.AllDirectories).Count();
-            int totalDirectories = Directory.GetDirectories(s_sourcePath, "*", SearchOption.AllDirectories).Count();
-
-            labelCountFiles.Content = totalFiles + " Dateien, " + totalDirectories + " Ordner";
+            labelAnzahlDateien.Content = totalDateienCount + " Dateien, " + totalOrdnerCount + " Ordner";
 
             long size = 0;
-            DirectoryInfo dir = new DirectoryInfo(s_sourcePath);
+            DirectoryInfo dir = new DirectoryInfo(s_quellVerzeichnis);
             foreach (FileInfo fi in dir.GetFiles("*.*", SearchOption.AllDirectories))
             {
                 size += fi.Length;
             }
-            labelFileSize.Content = "Grösse: " + Math.Round(size / Math.Pow(1024, 2), MidpointRounding.ToEven).ToString() + " MB" + " " + "(" + size.ToString() + " Bytes)";
+            labelQuellverzeichnisDateiGroesse.Content = "Grösse: " + Math.Round(size / Math.Pow(1024, 2), MidpointRounding.ToEven).ToString() + " MB" + " " + "(" + size.ToString() + " Bytes)";
         }
 
         private void DateiInfoZielpfad()
         {
-            int totalFiles = Directory.GetFiles(s_targetPath, "*.*", SearchOption.AllDirectories).Count();
-            int totalDirectories = Directory.GetDirectories(s_targetPath, "*", SearchOption.AllDirectories).Count();
-
-            labelCountFilesTargetPath.Content = totalFiles + " Dateien, " + totalDirectories + " Ordner";
+            labelAnzahlDateienZielverzeichnis.Content = totalDateienCount + " Dateien, " + totalOrdnerCount + " Ordner";
 
             long size = 0;
-            DirectoryInfo dir = new DirectoryInfo(s_targetPath);
+            DirectoryInfo dir = new DirectoryInfo(s_zielVerzeichnis);
             foreach (FileInfo fi in dir.GetFiles("*.*", SearchOption.AllDirectories))
             {
                 size += fi.Length;
             }
-            labelFileSizeTargetPath.Visibility = Visibility.Visible;
-            labelFileSizeTargetPath.Content = "Grösse: " + Math.Round(size / Math.Pow(1024, 2), MidpointRounding.ToEven).ToString() + " MB" + " " + "(" + size.ToString() + " Bytes)";
+            labelGroesseDateienZielverzeichnis.Visibility = Visibility.Visible;
+            labelGroesseDateienZielverzeichnis.Content = "Grösse: " + Math.Round(size / Math.Pow(1024, 2), MidpointRounding.ToEven).ToString() + " MB" + " " + "(" + size.ToString() + " Bytes)";
         }
 
         private void Labelstyle_Verzeichnis_loeschen()
         {
-            labelCopyInProgress.Visibility = Visibility.Visible;
-            labelCopyInProgress.Content = "Verzeichnisinhalt wird gelöscht...";
-            copyProgressBar.Visibility = Visibility.Visible;
-            copyProgressBar.Foreground = Brushes.Red;
-            copyProgressBar.IsIndeterminate = true;
+            labelDatenWerdenKopiert.Visibility = Visibility.Visible;
+            labelDatenWerdenKopiert.FontWeight = FontWeights.Normal;
+            labelDatenWerdenKopiert.Foreground = Brushes.Black;
+            labelDatenWerdenKopiert.Content = "Daten werden gelöscht...";
+            buttonAbbrechen.Visibility = Visibility.Visible;
+            labelLoeschfortschrittProzent.Visibility = Visibility.Visible;
+            progressBarLoeschvorgang.Visibility = Visibility.Visible;
         }
 
         private void Labelstyle_Kopiervorgang_start()
@@ -134,48 +135,47 @@ namespace HeosUpdateCreator
 
             buttonAbbrechen.Visibility = Visibility.Visible;
 
-            labelCopyInProgress.Content = "Dateien werden kopiert...";
-            labelCopyInProgress.FontWeight = FontWeights.Regular;
-            labelCopyInProgress.Foreground = Brushes.Black;
-            labelCopyInProgress.Visibility = Visibility.Visible;
+            labelDatenWerdenKopiert.Content = "Daten werden kopiert...";
+            labelDatenWerdenKopiert.FontWeight = FontWeights.Regular;
+            labelDatenWerdenKopiert.Foreground = Brushes.Black;
+            labelDatenWerdenKopiert.Visibility = Visibility.Visible;
 
-            labelCopyProgressPercent.Visibility = Visibility.Visible;
+            labelKopierfortschrittProzent.Visibility = Visibility.Visible;
 
-            copyProgressBar.Visibility = Visibility.Visible;
-            copyProgressBar.Foreground = (Brush)converter.ConvertFromString("#FF0097fb");
-            copyProgressBar.IsIndeterminate = false;
-            copyProgressBar.Value = 0;
+            progressBarKopiervorgang.Visibility = Visibility.Visible;
+            progressBarKopiervorgang.Foreground = (Brush)converter.ConvertFromString("#FF0097fb");
+            progressBarKopiervorgang.IsIndeterminate = false;
+            progressBarKopiervorgang.Value = 0;
         }
 
         private void Labelstyle_Kopiervorgang_abgebrochen()
         {
-            labelCopyInProgress.Content = "Kopiervrogang abgebrochen";
-            labelCopyInProgress.FontWeight = FontWeights.Bold;
-            labelCopyInProgress.Foreground = Brushes.Red;
-            labelCopyProgressPercent.Visibility = Visibility.Hidden;
-            labelCopyProgressPercent.Content = "";
+            labelDatenWerdenKopiert.Content = "Kopiervrogang abgebrochen";
+            labelDatenWerdenKopiert.FontWeight = FontWeights.Bold;
+            labelDatenWerdenKopiert.Foreground = Brushes.Red;
+            labelKopierfortschrittProzent.Visibility = Visibility.Hidden;
+            labelLoeschfortschrittProzent.Visibility = Visibility.Hidden;
+            labelKopierfortschrittProzent.Content = "";
 
             buttonAbbrechen.Visibility = Visibility.Hidden;
             buttonKopieren.Visibility = Visibility.Visible;
             buttonKopieren.Content = "Wiederholen";
-            //copyProgressBar.Value = 0;
         }
 
-        private void Labelstyle_Kopiervorgang_erfolgreich()
+        private void LabelstyleKopiervorgangErfolgreich()
         {
-            labelCopyInProgress.Content = "Daten erfolgreich kopiert";
-            labelCopyProgressPercent.Visibility = Visibility.Hidden;
-            labelCopyFileCount.Visibility = Visibility.Hidden;
+            labelDatenWerdenKopiert.Content = "Daten erfolgreich kopiert";
+            labelKopierfortschrittProzent.Visibility = Visibility.Hidden;
 
-            labelCopiedFilesInfo.Visibility = Visibility.Visible;
+            labelKopierteElemente.Visibility = Visibility.Visible;
 
             buttonAbbrechen.Visibility = Visibility.Hidden;
-            copyProgressBar.Value = 100;
+            progressBarKopiervorgang.Value = 100;
         }
 
         private void Check_Verzeichnispfade()
         {
-            if (!Directory.Exists(s_sourcePath))
+            if (!Directory.Exists(s_quellVerzeichnis))
             {
                 MessageBox.Show("Das Quellverzeichnis wurde nicht gefunden.\n \nNavigieren Sie im folgenden Fenster zum Quellverzeichnis und drücken Sie OK.", "Fehler", MessageBoxButton.OK, MessageBoxImage.Error);
                 using (var dialog = new System.Windows.Forms.FolderBrowserDialog())
@@ -188,184 +188,184 @@ namespace HeosUpdateCreator
                     }
                     else
                     {
-                        s_sourcePath = dialog.SelectedPath;
-                        labelOriginPath.Content = "Quellverzeichnis: " + s_sourcePath;
-                        DateiInfoQuellpfad();
+                        s_quellVerzeichnis = dialog.SelectedPath;
+                        labelQuellverzeichnis.Content = "Quellverzeichnis: " + s_quellVerzeichnis;
                     }
                 }
             }
-            else
+            if (!Directory.Exists(s_zielVerzeichnis))
             {
-                labelOriginPath.Content = "Quellverzeichnis: " + s_sourcePath;
-            }
-
-            if (!Directory.Exists(s_targetPath))
-            {
-                DirectoryInfo di = Directory.CreateDirectory(s_targetPath);
                 MessageBox.Show("Das Zielverzeichnis konnte nicht gefunden werden.\nEs wurde ein neues Verzeichnis mit dem angegebenen Pfad angelegt.", "Information", MessageBoxButton.OK, MessageBoxImage.Information);
-                labelTargetPath.Content = "Zielverzeichnis: " + s_targetPath;
+                DirectoryInfo di = Directory.CreateDirectory(s_zielVerzeichnis);
+                labelZielverzeichnis.Content = "Zielverzeichnis: " + s_zielVerzeichnis;
+            }
+            else if (s_zielVerzeichnis == @"C:\" || s_zielVerzeichnis == @"C:\Windows\*" || s_zielVerzeichnis == @"C:\Users" || s_zielVerzeichnis == @"C:\Program Files (x86)" || s_zielVerzeichnis == @"C:\Program Files")
+            {
+                labelZielverzeichnis.Content = "Ungültiges Zielverzeichnis: " + s_zielVerzeichnis;
+                labelZielverzeichnis.Foreground = Brushes.Red;
+                buttonKopieren.IsEnabled = false;
+                return;
             }
             else
             {
-                labelTargetPath.Content = "Zielverzeichnis: " + s_targetPath;
+                labelQuellverzeichnis.Content = "Quellverzeichnis: " + s_quellVerzeichnis;
+                labelZielverzeichnis.Content = "Zielverzeichnis: " + s_zielVerzeichnis;
             }
         }
 
-        #endregion Grafik (Labelaenderungen)
+        #endregion Grafik Labelaenderungen
 
-        #region Verzeichnis loeschen und Dateien kopieren
+        #region Backgroundworker Verzeichnis löschen
 
-        private void KopierWorkerInitialisieren()
+        private void LoeschWorkerInitialisieren()
         {
-            worker = new BackgroundWorker();
-            worker.WorkerSupportsCancellation = true;
-            worker.WorkerReportsProgress = true;
+            LoeschWorker = new BackgroundWorker();
+            LoeschWorker.WorkerSupportsCancellation = true;
+            LoeschWorker.WorkerReportsProgress = false;
 
-            worker.DoWork += worker_KopierenStart;
-            worker.ProgressChanged += worker_copyProgressBarUpdate;
-            worker.RunWorkerCompleted += worker_copyCompleted;
+            LoeschWorker.DoWork += LoeschWorkerStart;
+            LoeschWorker.RunWorkerCompleted += LoeschWorkerFertig;
+            Labelstyle_Verzeichnis_loeschen();
         }
 
-        public void worker_KopierenStart(object sender, DoWorkEventArgs eDoWork)
+        public void LoeschWorkerStart(object sender, DoWorkEventArgs eDoWork)
         {
-            int totalAllFiles = Directory.GetDirectories(s_sourcePath, "*", SearchOption.AllDirectories).Count() + Directory.GetFiles(s_sourcePath, "*.*", SearchOption.AllDirectories).Count();
+            //int totalZielDateienCount = Directory.GetFiles(s_zielVerzeichnis, "*.*", SearchOption.AllDirectories).Count();
+            //int totalZielOrdnerCount = Directory.GetDirectories(s_zielVerzeichnis, "*", SearchOption.AllDirectories).Count();
+            //int totalZielpfadElementeCount = totalZielDateienCount + totalZielOrdnerCount;
+            var dirInfo = new DirectoryInfo(s_zielVerzeichnis);
 
-
-            // neue Variante Filedelete - funktioniert
-            foreach (string sFile in Directory.GetFiles(s_targetPath))
+            foreach (string file in Directory.GetFiles(s_zielVerzeichnis))
             {
-                if (worker.CancellationPending == true)
+                if (LoeschWorker.CancellationPending == true)
                 {
                     eDoWork.Cancel = true;
                     return;
                 }
                 try
                 {
-                    File.Delete(sFile);
+                    File.SetAttributes(file, FileAttributes.Normal);
+                    File.Delete(file);
                 }
                 catch (Exception ex)
                 {
-                    if (ex is UnauthorizedAccessException)
-                    {
-                        File.SetAttributes(sFile, FileAttributes.Normal);
-                        File.Delete(sFile);
-                    }
-                    else
-                    {
-                        KopierenExceptionLogfile(ex, "Datei");
-                    }
+                    ExceptionLogfile(ex, "Datei");
                 }
             }
 
-            // Löschen von schreibgeschütztem .git Verzeichnis fehlt noch
-            var dirInfo = new DirectoryInfo(s_targetPath);
-
-
-            // Dateien löschen alte Version
-            //foreach (FileInfo file in dirInfo.GetFiles())
-            //{
-            //    if (worker.CancellationPending == true)
-            //    {
-            //        eDoWork.Cancel = true;
-            //        return;
-            //    }
-            //    try
-            //    {
-            //        file.Delete();
-            //    }
-            //    catch (Exception ex)
-            //    {
-            //        KopierenExceptionLogfile(ex, "File");
-            //    }
-            //}
-
             foreach (DirectoryInfo dir in dirInfo.GetDirectories())
             {
-                if (worker.CancellationPending == true)
+                if (LoeschWorker.CancellationPending == true)
                 {
                     eDoWork.Cancel = true;
                     return;
                 }
                 try
                 {
+                    dir.Attributes = FileAttributes.Normal;
                     dir.Delete(true);
                 }
                 catch (Exception ex)
                 {
-                    if (ex is UnauthorizedAccessException)
-                    {
-                        dir.Attributes &= ~FileAttributes.ReadOnly;
-                        dir.Delete(true);
-                    }
-                    else
-                    {
-                        KopierenExceptionLogfile(ex, "Ordner");
-                    }
+                    ExceptionLogfile(ex, "Ordner");
                 }
             }
+        }
 
-            Thread.Sleep(1500);
 
+        private void LoeschWorkerFertig(object sender, RunWorkerCompletedEventArgs eComplete)
+        {
+            if (eComplete.Cancelled)
+            {
+                progressBarLoeschvorgang.Value = 0;
+                Labelstyle_Kopiervorgang_abgebrochen();
+                labelDatenWerdenKopiert.Content = "Löschvorgang abgebrochen";
+            }
+            else
+            {
+                progressBarLoeschvorgang.Visibility = Visibility.Hidden;
+                labelLoeschfortschrittProzent.Visibility = Visibility.Hidden;
+                Labelstyle_Kopiervorgang_start();
+                Thread.Sleep(1000); // Wartezeit für UI
+                KopierWorker.RunWorkerAsync();
+            }
+        }
+        #endregion Backgroundworker Verzeichnis löschen
+
+        #region Backgroundworker Verzeichnis kopieren
+
+        private void KopierWorkerInitialisieren()
+        {
+            KopierWorker = new BackgroundWorker();
+            KopierWorker.WorkerSupportsCancellation = true;
+            KopierWorker.WorkerReportsProgress = true;
+
+            KopierWorker.DoWork += KopierWorkerStart;
+            KopierWorker.ProgressChanged += KopierWorkerProgressBarUpdate;
+            KopierWorker.RunWorkerCompleted += KopierWorkerFertig;
+            Labelstyle_Kopiervorgang_start();
+        }
+
+        public void KopierWorkerStart(object sender, DoWorkEventArgs eDoWork)
+        {
             int count = 0;
-            foreach (string dirPath in Directory.GetDirectories(s_sourcePath, "*", SearchOption.AllDirectories))
+            foreach (string dirPath in Directory.GetDirectories(s_quellVerzeichnis, "*", SearchOption.AllDirectories))
             {
-                if (worker.CancellationPending == true)
+                if (KopierWorker.CancellationPending == true)
                 {
                     eDoWork.Cancel = true;
                     return;
                 }
-                Directory.CreateDirectory(dirPath.Replace(s_sourcePath, s_targetPath));
+                Directory.CreateDirectory(dirPath.Replace(s_quellVerzeichnis, s_zielVerzeichnis));
                 count++;
-                worker.ReportProgress(count * 100 / totalAllFiles);
+                KopierWorker.ReportProgress(count * 100 / totalElementeCount);
             }
-            foreach (string newPath in Directory.GetFiles(s_sourcePath, "*.*", SearchOption.AllDirectories))
+            foreach (string newPath in Directory.GetFiles(s_quellVerzeichnis, "*.*", SearchOption.AllDirectories))
             {
-                if (worker.CancellationPending == true)
+                if (KopierWorker.CancellationPending == true)
                 {
                     eDoWork.Cancel = true;
                     return;
                 }
-                File.Copy(newPath, newPath.Replace(s_sourcePath, s_targetPath), true);
+                File.Copy(newPath, newPath.Replace(s_quellVerzeichnis, s_zielVerzeichnis), true);
                 count++;
-                worker.ReportProgress(count * 100 / totalAllFiles);
+                KopierWorker.ReportProgress(count * 100 / totalElementeCount);
             }
             eDoWork.Result = count;
         }
 
-        private void worker_copyProgressBarUpdate(object sender, ProgressChangedEventArgs uiUpdate)
+        private void KopierWorkerProgressBarUpdate(object sender, ProgressChangedEventArgs uiUpdate)
         {
-            copyProgressBar.Value = uiUpdate.ProgressPercentage;
-            labelCopyProgressPercent.Content = uiUpdate.ProgressPercentage.ToString() + "%";
+            progressBarKopiervorgang.Value = uiUpdate.ProgressPercentage;
+            labelKopierfortschrittProzent.Content = uiUpdate.ProgressPercentage.ToString() + "%";
         }
 
-        private void worker_copyCompleted(object sender, RunWorkerCompletedEventArgs eComplete)
+        private void KopierWorkerFertig(object sender, RunWorkerCompletedEventArgs eComplete)
         {
             if (eComplete.Cancelled)
             {
-                copyProgressBar.Value = 0;
+                progressBarKopiervorgang.Value = 0;
+                Labelstyle_Kopiervorgang_abgebrochen();
             }
             else
             {
                 DateiInfoZielpfad();
-                Labelstyle_Kopiervorgang_erfolgreich();
+                LabelstyleKopiervorgangErfolgreich();
                 buttonWeiter.IsEnabled = true;
                 var window = Application.Current.MainWindow;
-                (window as MainWindow).menuLabelChecked_1.Visibility = Visibility.Visible;
+                (window as MainWindow).labelReihenfolgeChecked_1.Visibility = Visibility.Visible;
 
-                int totalFiles = Directory.GetFiles(s_targetPath, "*.*", SearchOption.AllDirectories).Count();
-                int totalDirectories = Directory.GetDirectories(s_targetPath, "*", SearchOption.AllDirectories).Count();
-                KopierLogfileSchreiben(totalFiles,totalDirectories);
+                KopierLogfileSchreiben(totalDateienCount, totalOrdnerCount);
             }
         }
 
-
-    #endregion Verzeichnis loeschen und Dateien kopieren
+        #endregion Backgroundworker Verzeichnis kopieren
 
         #region Exception Handling / Logfiles
 
-        private void KopierenExceptionLogfile(Exception ex, string name)
+        private void ExceptionLogfile(Exception ex, string name)
         {
-            string logName = DateTime.Now.ToString("ddMMyy-HHmm") + "-" + name + "-Log.txt";
+            string logName = "ExceptionLog_" + name + DateTime.Now.ToString("ddMMyyyyHHmm") + ".log";
             string logdir = logpfad + logName;
 
             MessageBox.Show("Ein Fehler ist aufgetreten:\nLogfile in" + logdir + " geschrieben\n\n" + Convert.ToString(ex), "Fehler", MessageBoxButton.OK, MessageBoxImage.Error);
@@ -386,25 +386,24 @@ namespace HeosUpdateCreator
                 }
             }
         }
+
         private void KopierLogfileSchreiben(int anzahlDateien, int anzahlOrdner)
         {
-            string logName = DateTime.Now.ToString("ddMMyy-HHmm") + "-Kopieren_Log.txt";
+            string logName = "Kopierprozess.log";
             string logdir = logpfad + logName;
 
-         
             using (StreamWriter writer = new StreamWriter(logdir, true))
             {
                 writer.WriteLine("-----------------------------------------------------------------------------");
                 writer.WriteLine();
                 writer.WriteLine("Datum : " + DateTime.Now.ToString("dd.MM.yyyy HH:mm:ss"));
-                writer.WriteLine("Quellverzeichnis: " + s_sourcePath);
-                writer.WriteLine("Zielverzeichnis: " + s_targetPath);
+                writer.WriteLine("Quellverzeichnis: " + s_quellVerzeichnis);
+                writer.WriteLine("Zielverzeichnis: " + s_zielVerzeichnis);
                 writer.WriteLine(anzahlDateien + " Dateien und " + anzahlOrdner + " Ordner erfolgreich kopiert");
                 writer.WriteLine();
-                writer.WriteLine("-----------------------------------------------------------------------------");
             }
         }
 
-        #endregion
+        #endregion Exception Handling / Logfiles
     }
 }

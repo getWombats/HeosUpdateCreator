@@ -15,7 +15,7 @@ namespace HeosUpdateCreator
             InitializeComponent();
 
             // Frame mit "DateienKopieren" Page initialisieren
-            frameMainContent.Source = new Uri("DateienKopieren.xaml", UriKind.Relative);
+            framePageAnzeige.Source = new Uri("DateienKopieren.xaml", UriKind.Relative);
         }
     }
 }

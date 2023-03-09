@@ -27,7 +27,7 @@ namespace HeosUpdateCreator
                 NavigationService.GoForward();
             }
             var window = Application.Current.MainWindow;
-            (window as MainWindow).menuLabelChecked_2.Visibility = Visibility.Visible;
+            (window as MainWindow).labelReihenfolgeChecked_2.Visibility = Visibility.Visible;
         }
 
         private void buttonZurueck_Click(object sender, RoutedEventArgs e)

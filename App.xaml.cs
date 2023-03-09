@@ -15,8 +15,8 @@ namespace HeosUpdateCreator
         {
             base.OnStartup(e);
 
-            string s_hostname = "ANDRES";
-            //string s_hostname = "HRDWS59";
+            //string s_hostname = "ANDRES";
+            string s_hostname = "HRDWS59";
 
             //splash Fenster initialisieren und als MainWindow setzen
             var splashScreen = new Programmstart();
@@ -33,7 +33,7 @@ namespace HeosUpdateCreator
             Task.Factory.StartNew(() =>
             {
                 //Ladevorgang simulieren
-                Thread.Sleep(1500);
+                Thread.Sleep(1800);
 
                 // zum UI Thread zurückkehren
                 this.Dispatcher.Invoke(() =>
@@ -47,10 +47,6 @@ namespace HeosUpdateCreator
                     splashScreen.Close();
                 });
             });
-        }
-        public static void lalala()
-        {
-            //sfdsnfgskl
         }
     }
 }

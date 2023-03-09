@@ -90,22 +90,24 @@
                 Grid.RowSpan="6"
                 Grid.ColumnSpan="2"
                 BorderBrush="#FFF3F3F3"
-                BorderThickness="0,0,0,1" />
+                BorderThickness="0,0,0,1"
+                Margin="10,0,10,0"/>
 
+            <!--<TextBox Grid.Row="0" Grid.Column="1" Width="120" Height="25" BorderThickness="1" BorderBrush="Red"/>-->
             <!--  Grid Row 0  -->
             <Label
                 Grid.Row="0"
                 Grid.ColumnSpan="2"
                 Margin="25,10,0,10"
                 HorizontalAlignment="Left"
-                Content="Kopieren der Visual Studio Projektordner"
+                Content="Visual Studio Projektordner kopieren"
                 Style="{StaticResource headerTextStyle}" />
 
             <!--  Grid Row 1  -->
             <StackPanel Grid.Row="1" Margin="25,20,0,0">
 
                 <Label
-                    x:Name="labelOriginPath"
+                    x:Name="labelQuellverzeichnis"
                     Grid.Row="1"
                     Margin="0,0,0,0"
                     HorizontalAlignment="Left"
@@ -114,7 +116,7 @@
                     Style="{StaticResource labelNormalTextStyle}" />
 
                 <Label
-                    x:Name="labelCountFiles"
+                    x:Name="labelAnzahlDateien"
                     Grid.Row="1"
                     Margin="0,10,0,0"
                     HorizontalAlignment="Left"
@@ -123,7 +125,7 @@
                     Style="{StaticResource labelNormalTextStyle}" />
 
                 <Label
-                    x:Name="labelFileSize"
+                    x:Name="labelQuellverzeichnisDateiGroesse"
                     Grid.Row="1"
                     Margin="0,5,0,0"
                     HorizontalAlignment="Left"
@@ -139,7 +141,7 @@
             <StackPanel Grid.Row="3" Margin="25,20,0,0">
 
                 <Label
-                    x:Name="labelTargetPath"
+                    x:Name="labelZielverzeichnis"
                     Grid.Row="1"
                     Margin="0,0,0,0"
                     HorizontalAlignment="Left"
@@ -147,7 +149,7 @@
                     Content="Zielverzeichnis:"
                     Style="{StaticResource labelNormalTextStyle}" />
                 <Label
-                    x:Name="labelCopiedFilesInfo"
+                    x:Name="labelKopierteElemente"
                     Grid.Row="1"
                     Margin="0,10,0,0"
                     HorizontalAlignment="Left"
@@ -158,7 +160,7 @@
                     Visibility="Hidden" />
 
                 <Label
-                    x:Name="labelCountFilesTargetPath"
+                    x:Name="labelAnzahlDateienZielverzeichnis"
                     Grid.Row="1"
                     Margin="0,5,0,0"
                     HorizontalAlignment="Left"
@@ -168,7 +170,7 @@
                     Style="{StaticResource labelNormalTextStyle}" />
 
                 <Label
-                    x:Name="labelFileSizeTargetPath"
+                    x:Name="labelGroesseDateienZielverzeichnis"
                     Grid.Row="1"
                     Margin="0,5,0,0"
                     HorizontalAlignment="Left"
@@ -182,7 +184,7 @@
 
             <!--  Grid Row 6  -->
             <Label
-                x:Name="labelCopyInProgress"
+                x:Name="labelDatenWerdenKopiert"
                 Grid.Row="6"
                 Margin="25,0,0,60"
                 HorizontalAlignment="Left"
@@ -193,40 +195,27 @@
                 Visibility="Hidden" />
 
             <Label
-                x:Name="labelCopyProgressPercent"
+                x:Name="labelKopierfortschrittProzent"
                 Grid.Row="6"
                 Margin="150,0,160,60"
-                VerticalAlignment="Bottom"
-                HorizontalContentAlignment="Right"
-                Content="0%"
-                Style="{StaticResource labelNormalTextStyle}"
-                Visibility="Hidden" />
-
-            <Label
-                x:Name="labelCopyFileCount"
-                Grid.Row="6"
-                Width="50"
-                Margin="25,0,0,15"
-                HorizontalAlignment="Left"
                 VerticalAlignment="Bottom"
                 HorizontalContentAlignment="Right"
                 Content=""
                 Style="{StaticResource labelNormalTextStyle}"
                 Visibility="Hidden" />
+
             <Label
-                x:Name="labelCopyFileTotal"
+                x:Name="labelLoeschfortschrittProzent"
                 Grid.Row="6"
-                Width="150"
-                Margin="80,0,0,15"
-                HorizontalAlignment="Left"
+                Margin="150,0,160,60"
                 VerticalAlignment="Bottom"
-                HorizontalContentAlignment="Left"
-                Content="/"
+                HorizontalContentAlignment="Right"
+                Content=""
                 Style="{StaticResource labelNormalTextStyle}"
                 Visibility="Hidden" />
 
             <ProgressBar
-                x:Name="copyProgressBar"
+                x:Name="progressBarKopiervorgang"
                 Grid.Row="6"
                 Width="300"
                 Height="17"
@@ -237,6 +226,21 @@
                 BorderThickness="1"
                 Cursor="Arrow"
                 Foreground="#FF0097fb"
+                Visibility="Hidden" />
+
+            <ProgressBar
+                x:Name="progressBarLoeschvorgang"
+                Grid.Row="6"
+                Width="300"
+                Height="17"
+                Margin="0,0,0,35"
+                VerticalAlignment="Bottom"
+                BorderBrush="#FFEEEEEE"
+                BorderThickness="1"
+                Cursor="Arrow"
+                Background="White"
+                Foreground="#ff4545"
+                IsIndeterminate="True"
                 Visibility="Hidden" />
         </Grid>
     </DockPanel>

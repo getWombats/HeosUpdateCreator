@@ -70,7 +70,8 @@
                 Grid.RowSpan="6"
                 Grid.ColumnSpan="2"
                 BorderBrush="#FFF3F3F3"
-                BorderThickness="2,0,0,2" />
+                BorderThickness="0,0,0,1"
+                Margin="10,0,10,0"/>
 
             <!--  Grid Row 0  -->
             <Label

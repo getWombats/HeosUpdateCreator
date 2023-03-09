@@ -6,10 +6,12 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     Title="HeosUpdateCreator"
     Width="888"
+    MinWidth="888"
     Height="580"
+    MinHeight="580"
     Icon="app.ico"
     RenderOptions.ClearTypeHint="Auto"
-    ResizeMode="NoResize"
+    ResizeMode="CanMinimize"
     TextOptions.TextFormattingMode="Display"
     TextOptions.TextRenderingMode="Auto"
     WindowStartupLocation="CenterScreen"
@@ -90,36 +92,36 @@
                 <RowDefinition Height="Auto" />
             </Grid.RowDefinitions>
 
-            <TextBox
-                x:Name="textBoxMenuTop"
+            <Label
+                x:Name="labelAlteVersion"
                 Grid.Row="0"
                 Grid.Column="1"
                 VerticalAlignment="Top"
                 BorderThickness="0"
                 FontWeight="Bold"
-                Foreground="Blue"
-                Visibility="Hidden">
-                Text1
-            </TextBox>
+                Foreground="Gray"
+                Visibility="Visible">
+                Version 396
+            </Label>
 
-            <TextBox
-                x:Name="textBoxMenuTopLower"
+            <Label
+                x:Name="labelNeueVersion"
                 Grid.Row="1"
                 Grid.Column="1"
                 VerticalAlignment="Top"
                 BorderThickness="0"
                 FontWeight="Bold"
-                Foreground="Red"
-                Visibility="Hidden">
-                Text2
-            </TextBox>
+                Foreground="Green"
+                Visibility="Visible">
+                Version 397
+            </Label>
 
             <StackPanel
                 Grid.Row="2"
                 Grid.Column="0"
                 HorizontalAlignment="Center">
                 <Label
-                    x:Name="menuLabelChecked_1"
+                    x:Name="labelReihenfolgeChecked_1"
                     Margin="0,5,0,10"
                     x:FieldModifier="public"
                     Style="{StaticResource LabelStatusStyle}"
@@ -128,7 +130,7 @@
                 </Label>
 
                 <Label
-                    x:Name="menuLabelChecked_2"
+                    x:Name="labelReihenfolgeChecked_2"
                     Margin="0,0,0,10"
                     x:FieldModifier="public"
                     Style="{StaticResource LabelStatusStyle}"
@@ -137,7 +139,7 @@
                 </Label>
 
                 <Label
-                    x:Name="menuLabelChecked_3"
+                    x:Name="labelReihenfolgeChecked_3"
                     Margin="0,0,0,10"
                     x:FieldModifier="public"
                     Style="{StaticResource LabelStatusStyle}"
@@ -146,7 +148,7 @@
                 </Label>
 
                 <Label
-                    x:Name="menuLabelChecked_4"
+                    x:Name="labelReihenfolgeChecked_4"
                     Margin="0,0,0,10"
                     x:FieldModifier="public"
                     Style="{StaticResource LabelStatusStyle}"
@@ -155,7 +157,7 @@
                 </Label>
 
                 <Label
-                    x:Name="menuLabelChecked_5"
+                    x:Name="labelReihenfolgeChecked_5"
                     Margin="0,0,0,10"
                     x:FieldModifier="public"
                     Style="{StaticResource LabelStatusStyle}"
@@ -164,7 +166,7 @@
                 </Label>
 
                 <Label
-                    x:Name="menuLabelChecked_6"
+                    x:Name="labelReihenfolgeChecked_6"
                     Margin="0,0,0,10"
                     x:FieldModifier="public"
                     Style="{StaticResource LabelStatusStyle}"
@@ -185,38 +187,40 @@
                     Grid.Column="1"
                     HorizontalAlignment="Left">
                     <Label
-                        x:Name="labelMenu1"
+                        x:Name="labelReihenfolge1"
                         Content="1. Dateien kopieren"
                         Style="{StaticResource MenuLabelStyle}" />
 
                     <Label
-                        x:Name="labelMenu2"
+                        x:Name="labelReihenfolge2"
                         Content="2. SQL Setup"
                         Style="{StaticResource MenuLabelStyle}" />
 
                     <Label
-                        x:Name="labelMenu3"
+                        x:Name="labelReihenfolge3"
                         Content="3. Setupschritt"
                         Style="{StaticResource MenuLabelStyle}" />
                     <Label
-                        x:Name="labelMenu4"
+                        x:Name="labelReihenfolge4"
                         Content="4. Setupschritt"
                         Style="{StaticResource MenuLabelStyle}" />
                     <Label
-                        x:Name="labelMenu5"
+                        x:Name="labelReihenfolge5"
                         Content="5. Setupschritt"
                         Style="{StaticResource MenuLabelStyle}" />
                     <Label
-                        x:Name="labelMenu6"
+                        x:Name="labelReihenfolge6"
                         Content="6. Setupschritt"
                         Style="{StaticResource MenuLabelStyle}" />
                 </StackPanel>
             </Border>
         </Grid>
 
-        <Grid>
+        <Grid Width="Auto" Height="Auto">
             <Frame
-                x:Name="frameMainContent"
+                x:Name="framePageAnzeige"
+                Width="Auto"
+                Height="Auto"
                 HorizontalAlignment="Left"
                 VerticalAlignment="Top"
                 NavigationUIVisibility="Hidden"
