@@ -1,4 +1,6 @@
-﻿namespace HeosUpdateCreator
+﻿using System.Windows;
+
+namespace HeosUpdateCreator
 {
     /// <summary>
     /// Interaktionslogik für Programmstart.xaml

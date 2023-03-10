@@ -21,7 +21,7 @@ namespace HeosUpdateCreator
         private static string s_quellVerzeichnis = @"O:\ENT\ENT Soria\Temp\Quellverzeichnis";
         private static string s_zielVerzeichnis = @"C:\Zielverzeichnis";
         private static string s_logpfad = @"C:\Programmentwicklung\Logs\";
-        private static string s_configpfad = @"C:\Programmentwicklung\HeosUpdateCreator.heo";
+        //private static string s_configpfad = @"C:\Programmentwicklung\HeosUpdateCreator.heo";
 
         // Anzahl Dateien in Verzeichnissen initialisieren
         private static int totalAnzahlDateien = Directory.GetFiles(s_quellVerzeichnis, "*.*", SearchOption.AllDirectories).Count();
