@@ -1,0 +1,30 @@
+// Hauptdatei Programmumgebung HeosUpdateCreator
+// Copyright by Herzig AG Raumdesign
+
+
+
+
+// ****************************************
+// HeosUpdateCreator *** ANFANG
+
+
+// Programmversion
+[VERSION]
+PARAM001=398;									// Programmversion (int)
+[/VERSION]
+
+// Programmumgebung
+[PGU]
+PARAM001=O:\ENT\ENT Soria\Temp\Quellverzeichnis;			// Quellverzeichnis für Kopiervorgang
+PARAM002=C:\Zielverzeichnis;							// Zielverzeichnis für Kopiervorgang
+PARAM003=C:\Programmentwicklung\Logs;					// Zielverzeichnis für Log-Dateien
+PARAM004=ANDRES; //HRDWS59							// Hostname
+PARAM005=;					//
+PARAM006=;					//
+PARAM007=;					//
+PARAM008=;					//
+PARAM009=;					//
+PARAM010=;					//
+[/PGU]
+
+// ****************************************
